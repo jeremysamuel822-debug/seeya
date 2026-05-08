@@ -11,6 +11,10 @@ export async function POST(req: NextRequest) {
   }
 
   const savedNames = new Set(locations.map((l: any) => l.name.toLowerCase()))
+  const requiredTimes: Record<string, string> = {}
+  for (const l of locations) {
+    if (l.suggested_time) requiredTimes[l.name.toLowerCase()] = l.suggested_time
+  }
 
   const locationList = locations
     .map((l: any) => {
@@ -86,10 +90,18 @@ export async function POST(req: NextRequest) {
     const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim()
     const itinerary = JSON.parse(cleaned)
 
-    // Enforce from_saved — Claude sometimes gets this wrong
+    // Enforce from_saved and creator-specified times server-side
+    const timeLabel: Record<string, string> = {
+      morning: 'Morning', lunch: 'Lunch', afternoon: 'Afternoon',
+      dinner: 'Dinner', evening: 'Evening'
+    }
     for (const day of itinerary.days ?? []) {
       for (const slot of day.slots ?? []) {
-        slot.from_saved = savedNames.has(slot.name?.toLowerCase())
+        const key = slot.name?.toLowerCase()
+        slot.from_saved = savedNames.has(key)
+        if (key && requiredTimes[key]) {
+          slot.time = timeLabel[requiredTimes[key]] ?? slot.time
+        }
       }
     }
 
