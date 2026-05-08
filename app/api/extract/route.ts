@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     'You are a travel content analyst. Extract travel locations from this video/post.',
     '',
     'Title: ' + title,
-    'Content: ' + content.slice(0, 2000),
+    'Content: ' + content.slice(0, 6000),
     '',
     'Instructions:',
     '- If specific places are named (restaurants, hotels, attractions), extract them exactly.',

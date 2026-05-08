@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         `Extract travel locations from this YouTube video about ${destination}.`,
         '',
         'Title: ' + snippet.title,
-        'Description: ' + (snippet.description || '').slice(0, 800),
+        'Description: ' + (snippet.description || '').slice(0, 4000),
         '',
         'Return ONLY valid JSON, no other text:',
         '{',
