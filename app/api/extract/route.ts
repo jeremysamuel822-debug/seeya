@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
     const raw = msg.content[0].type === 'text' ? msg.content[0].text : '{}'
     const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim()
     const extracted = JSON.parse(cleaned)
-    return NextResponse.json({ platform, title, ...extracted })
+    return NextResponse.json({ platform, title, _isTranscript: isTranscript, ...extracted })
   } catch (err) {
     console.log('Parse error:', err)
     return NextResponse.json({ error: 'Could not extract locations' }, { status: 500 })
