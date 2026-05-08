@@ -7,10 +7,11 @@ export async function POST(req: NextRequest) {
   const { destination, vibe, tripType, budget } = await req.json()
   if (!destination) return NextResponse.json({ error: 'Destination required' }, { status: 400 })
 
-  const query = [destination, vibe, tripType, 'travel guide'].filter(Boolean).join(' ')
+  // Keep destination prominent — it must be first and repeated so YouTube doesn't drift
+  const query = `"${destination}" travel ${[vibe, tripType].filter(Boolean).join(' ')}`.trim()
 
   const searchRes = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(query)}&type=video&maxResults=6&part=snippet&key=${process.env.YOUTUBE_API_KEY}`
+    `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(query)}&type=video&maxResults=10&part=snippet&key=${process.env.YOUTUBE_API_KEY}`
   )
   const searchData = await searchRes.json()
 
@@ -76,5 +77,19 @@ export async function POST(req: NextRequest) {
     })
   )
 
-  return NextResponse.json(results.filter(Boolean))
+  const destLower = destination.toLowerCase()
+
+  const relevant = results.filter((r: any) => {
+    if (!r) return false
+    const city = (r.destination_city || '').toLowerCase()
+    const country = (r.destination_country || '').toLowerCase()
+    // Keep if either the extracted city/country overlaps with the requested destination
+    return city.includes(destLower) || destLower.includes(city) ||
+           country.includes(destLower) || destLower.includes(country) ||
+           // Also check the video title directly as a fallback
+           r.title.toLowerCase().includes(destLower)
+  })
+
+  // Return up to 6 relevant results; fall back to all results if filter is too aggressive
+  return NextResponse.json(relevant.length >= 2 ? relevant.slice(0, 6) : results.filter(Boolean).slice(0, 6))
 }
