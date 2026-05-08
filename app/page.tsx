@@ -377,6 +377,15 @@ export default function SeeYa() {
           background: var(--lav-pale); border: 1.5px solid var(--lav);
           border-radius: 14px; padding: 14px 15px; margin-bottom: 18px;
         }
+        .itin-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .btn-download {
+          font-size: 10px; font-weight: 600; letter-spacing: .5px;
+          background: white; color: var(--lav-dark);
+          border: 1.5px solid var(--lav); border-radius: 100px;
+          padding: 5px 12px; cursor: pointer; white-space: nowrap;
+          flex-shrink: 0; transition: background .15s;
+        }
+        .btn-download:hover { background: var(--lav-pale); }
         .itin-eyebrow {
           font-size: 9px; font-weight: 600; letter-spacing: 2.5px;
           text-transform: uppercase; color: var(--lav-dark); margin-bottom: 4px;
@@ -651,6 +660,40 @@ function SavesPanel({ url, setUrl, addSave, trip, tripOpen, setTripOpen, persist
   )
 }
 
+function downloadItinerary(itinerary: Itinerary, saves: Save[]) {
+  const lines: string[] = []
+  lines.push(`${itinerary.title}`)
+  lines.push(`${itinerary.city}, ${itinerary.country} · ${itinerary.days.length} days`)
+  lines.push('')
+
+  for (const day of itinerary.days) {
+    lines.push(`DAY ${day.day} — ${day.theme.toUpperCase()}`)
+    lines.push('')
+    for (const slot of day.slots) {
+      lines.push(`[${slot.time.toUpperCase()}] ${slot.name}`)
+      lines.push(`${slot.type} · ${slot.estimated_cost}`)
+      lines.push(slot.notes)
+      const source = slot.from_saved ? '✦ From your Shorts' : '+ Added by AI'
+      const creator = slot.creator ? ` · 🎥 ${slot.creator}` : ''
+      lines.push(`${source}${creator}`)
+      lines.push('')
+    }
+  }
+
+  const inspiredSaves = saves.filter(s => s.creator)
+  if (inspiredSaves.length > 0) {
+    lines.push('INSPIRED BY')
+    inspiredSaves.forEach(s => lines.push(`${s.creator} — ${s.url}`))
+  }
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `${itinerary.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.txt`
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
 function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalPlaces }: {
   building: boolean; itinerary: Itinerary | null; saves: Save[]
   creatorLinks: Record<string, string>; doneSaves: number; totalPlaces: number
@@ -693,9 +736,14 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
   return (
     <>
       <div className="itin-header">
-        <div className="itin-eyebrow">Your Itinerary</div>
-        <div className="itin-title">{itinerary.title}</div>
-        <div className="itin-meta">{itinerary.city}, {itinerary.country} · {itinerary.days.length} days · {totalPlaces} places from your Shorts</div>
+        <div className="itin-header-row">
+          <div>
+            <div className="itin-eyebrow">Your Itinerary</div>
+            <div className="itin-title">{itinerary.title}</div>
+            <div className="itin-meta">{itinerary.city}, {itinerary.country} · {itinerary.days.length} days · {totalPlaces} places from your Shorts</div>
+          </div>
+          <button className="btn-download" onClick={() => downloadItinerary(itinerary, saves)}>↓ Download</button>
+        </div>
       </div>
 
       {inspiredSaves.length > 0 && (
