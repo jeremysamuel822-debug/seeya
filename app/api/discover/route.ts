@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         const extracted = JSON.parse(cleaned)
         return {
           videoId,
-          videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
+          videoUrl: `https://www.youtube.com/shorts/${videoId}`,
           title: snippet.title,
           channelName,
           channelHandle,
