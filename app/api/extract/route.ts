@@ -24,7 +24,7 @@ async function getYouTubeData(url: string) {
     fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${process.env.YOUTUBE_API_KEY}`)
       .then(r => r.json()),
     YoutubeTranscript.fetchTranscript(videoId)
-      .then(lines => lines.map(l => l.text).join(' '))
+      .then(lines => lines.map(l => l.text).join(' ').replace(/\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim())
       .catch(() => '')
   ])
 
@@ -61,19 +61,17 @@ export async function POST(req: NextRequest) {
   const sourceLabel = isTranscript ? 'Transcript (spoken words from the creator)' : 'Description'
 
   const prompt = [
-    'You are a travel content analyst. Extract ONLY the places a creator explicitly names in this video.',
+    'You are a travel content analyst. Extract every place a creator explicitly names in this video.',
     '',
     'Title: ' + title,
     sourceLabel + ': ' + content.slice(0, 8000),
     '',
-    'STRICT RULES:',
-    '- Only include a place if the creator says its actual name. "Tavern on the Green", "Serendipity 3", "Clinton Street Baking Co." are real names — include them.',
-    '- DO NOT invent or guess specific names for vague descriptions. If the creator says "New York\'s most famous pizza" or "a great local bakery" without naming it — skip it entirely. Do not fill in "Joe\'s Pizza" or "Levain Bakery".',
-    '- Extract place names exactly as spoken — no paraphrasing, no substitutions.',
-    '- For each place, capture the meal/time context the creator gives it. Examples: "have lunch at X" → lunch, "dinner at Y" → dinner, "cap off the day with Z" → dinner, "start with A" → morning. Use: morning, lunch, afternoon, dinner, evening, or null.',
-    '- Prioritise restaurants, bars, and unique experiences over generic landmarks.',
-    '- Only include a generic landmark if the creator pairs it with a specific activity or reason.',
-    '- If truly no places are named at all, suggest 3-5 real places matching the city and vibe.',
+    'RULES:',
+    '- Include EVERY place the creator names — restaurants, bars, cafes, landmarks, museums, parks, neighborhoods, bridges, observation decks, experiences. All of them.',
+    '- Extract the name exactly as spoken. Do not paraphrase or substitute.',
+    '- DO NOT invent names for vague descriptions. "A famous pizza spot" with no name → skip. But "Joe\'s Pizza" → include.',
+    '- For each place, capture the time context: "have breakfast at X" → morning, "lunch at Y" → lunch, "dinner at Z" → dinner, "cap off the night at W" → evening, "afternoon stop at V" → afternoon. Use: morning, lunch, afternoon, dinner, evening, or null.',
+    '- If no places are named at all, suggest 3-5 real places matching the city and vibe.',
     '- Always return a non-empty locations array.',
     '- Infer vibe_tags from tone and content.',
     '',
