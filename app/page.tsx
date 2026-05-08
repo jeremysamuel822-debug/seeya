@@ -666,6 +666,16 @@ function downloadItinerary(itinerary: Itinerary, saves: Save[]) {
   lines.push(`${itinerary.city}, ${itinerary.country} · ${itinerary.days.length} days`)
   lines.push('')
 
+  // Debug: show what was extracted from each save
+  const allLocations = saves.filter(s => s.status === 'done').flatMap(s =>
+    s.locations.map(l => `  - ${l.name} (${(l as any).suggested_time ?? 'no time'}) — ${l.type}`)
+  )
+  if (allLocations.length > 0) {
+    lines.push('EXTRACTED FROM YOUR SHORTS:')
+    allLocations.forEach(l => lines.push(l))
+    lines.push('')
+  }
+
   for (const day of itinerary.days) {
     lines.push(`DAY ${day.day} — ${day.theme.toUpperCase()}`)
     lines.push('')
