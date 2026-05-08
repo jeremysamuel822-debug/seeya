@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const client = new Anthropic()
 
 export async function POST(req: NextRequest) {
-  const { locations, city, country, vibe_tags, days = 3 } = await req.json()
+  const { locations, city, country, vibe_tags, days = 3, travelers, budget, focus, priorities, vibe } = await req.json()
 
   if (!locations || locations.length === 0) {
     return NextResponse.json({ error: 'No locations provided' }, { status: 400 })
@@ -14,17 +14,31 @@ export async function POST(req: NextRequest) {
     .map((l: any) => `- ${l.name} (${l.type}, ${l.estimated_cost})${l.creator ? ` [via ${l.creator}]` : ''}: ${l.notes}`)
     .join('\n')
 
+  const profileLines = [
+    travelers  && `Traveling with: ${travelers}`,
+    budget     && `Budget: ${budget}`,
+    vibe       && `Vibe: ${vibe}`,
+    focus?.length   && `Trip focus: ${focus.join(', ')}`,
+    priorities?.length && `Planning priorities: ${priorities.join(', ')}`,
+  ].filter(Boolean).join('\n')
+
   const prompt = [
     `You are a travel itinerary planner. Create a ${days}-day itinerary for ${city}, ${country}.`,
     '',
-    'Vibe: ' + (vibe_tags?.join(', ') || 'general travel'),
+    'Traveler profile:',
+    profileLines || 'No profile provided — use general travel preferences.',
+    '',
+    'Content vibe tags: ' + (vibe_tags?.join(', ') || 'general travel'),
     '',
     "Known locations from the user's saved content:",
     locationList,
     '',
     'Instructions:',
     '- Organize the known locations into logical days (by proximity, meal timing, etc.)',
-    '- Fill gaps with 1-2 real additional suggestions per day that match the vibe',
+    '- Fill gaps with 1-2 real additional suggestions per day that match the traveler profile',
+    '- Respect the budget level when suggesting additional places',
+    `- Tailor suggestions to a ${travelers || 'general'} trip — e.g. girls trips get aesthetic cafes and rooftop bars, honeymoons get romantic dinners, families get kid-friendly spots`,
+    '- Prioritize the focus areas and planning priorities from the profile',
     '- Each day should have morning, afternoon, and evening slots',
     '- Keep it practical and fun',
     '',
