@@ -163,6 +163,7 @@ export default function SeeYa() {
         .ob-progress{display:flex;gap:6px;margin-bottom:36px;}
         .ob-dot{flex:1;height:5px;border-radius:3px;background:var(--cream3);transition:background .3s;}
         .ob-dot.done{background:var(--coral);}
+        .ob-logo{display:block;margin:0 auto 20px;height:90px;width:auto;}
         .ob-emoji{font-size:52px;text-align:center;margin-bottom:14px;}
         .ob-title{font-family:var(--font-h);font-size:26px;color:var(--brown);text-align:center;margin-bottom:6px;}
         .ob-subtitle{font-size:13px;font-weight:600;color:var(--brown3);text-align:center;margin-bottom:28px;line-height:1.5;}
@@ -191,7 +192,7 @@ export default function SeeYa() {
 
         /* ── MAIN APP ── */
         .nav{background:var(--cream);border-bottom:2.5px solid var(--brown);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-        .nav-logo{font-family:var(--font-h);font-size:24px;color:var(--coral);}
+        .nav-logo{height:36px;width:auto;display:block;}
         .nav-right{display:flex;align-items:center;gap:8px;}
         .saves-pill{font-family:var(--font-h);font-size:12px;background:var(--amber-light);color:var(--brown2);border:2px solid var(--brown);border-radius:20px;padding:3px 12px;}
         .btn-build{font-family:var(--font-h);font-size:12px;background:var(--coral);color:#fff;border:2px solid var(--brown);border-radius:20px;padding:6px 16px;cursor:pointer;transition:background .15s;}
@@ -296,7 +297,7 @@ export default function SeeYa() {
             {/* Step 1 — Destination */}
             {obStep === 1 && (
               <>
-                <div className="ob-emoji">🌍</div>
+                <img src="/logo.png" alt="SeeYa Travel" className="ob-logo" />
                 <div className="ob-title">Let's plan your trip</div>
                 <div className="ob-subtitle">Tell us a little about your adventure so we can make it perfect</div>
 
@@ -333,7 +334,7 @@ export default function SeeYa() {
             {/* Step 2 — Crew & Budget */}
             {obStep === 2 && (
               <>
-                <div className="ob-emoji">👯‍♀️</div>
+                <img src="/logo.png" alt="SeeYa Travel" className="ob-logo" />
                 <div className="ob-title">Who's coming?</div>
                 <div className="ob-subtitle">We'll tailor your itinerary to your group and budget</div>
 
@@ -366,7 +367,7 @@ export default function SeeYa() {
             {/* Step 3 — Focus & Priorities */}
             {obStep === 3 && (
               <>
-                <div className="ob-emoji">✨</div>
+                <img src="/logo.png" alt="SeeYa Travel" className="ob-logo" />
                 <div className="ob-title">What matters most?</div>
                 <div className="ob-subtitle">Pick up to 3 for each — this shapes your whole trip</div>
 
@@ -401,7 +402,7 @@ export default function SeeYa() {
             {/* Step 4 — Vibe & Email */}
             {obStep === 4 && (
               <>
-                <div className="ob-emoji">💌</div>
+                <img src="/logo.png" alt="SeeYa Travel" className="ob-logo" />
                 <div className="ob-title">Almost there!</div>
                 <div className="ob-subtitle">Last few details — both optional but super helpful</div>
 
@@ -429,7 +430,7 @@ export default function SeeYa() {
         {onboardingDone && (
           <>
             <nav className="nav">
-              <div className="nav-logo">{greeting}</div>
+              <img src="/logo.png" alt="SeeYa Travel" className="nav-logo" />
               <div className="nav-right">
                 <span className="saves-pill">{doneSaves} saves ✦</span>
                 <button className="btn-build" onClick={buildItinerary} disabled={building || doneSaves === 0}>
