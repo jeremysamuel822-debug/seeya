@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No locations provided' }, { status: 400 })
   }
 
+  const savedNames = new Set(locations.map((l: any) => l.name.toLowerCase()))
+
   const locationList = locations
     .map((l: any) => `- ${l.name} (${l.type}, ${l.estimated_cost})${l.creator ? ` [via ${l.creator}]` : ''}: ${l.notes}`)
     .join('\n')
@@ -38,9 +40,9 @@ export async function POST(req: NextRequest) {
     '- Fill gaps with 1-2 real additional suggestions per day that match the traveler profile',
     '- Respect the budget level when suggesting additional places',
     `- Tailor suggestions to a ${travelers || 'general'} trip — e.g. girls trips get aesthetic cafes and rooftop bars, honeymoons get romantic dinners, families get kid-friendly spots`,
-    '- Prioritize the focus areas and planning priorities from the profile',
     '- Each day should have morning, afternoon, and evening slots',
     '- Keep it practical and fun',
+    '- IMPORTANT: set "from_saved" to true ONLY for places that appear exactly in the known locations list above. Set it to false for every place you add yourself.',
     '',
     'Return ONLY valid JSON, no other text:',
     '{',
@@ -77,6 +79,14 @@ export async function POST(req: NextRequest) {
     const raw = msg.content[0].type === 'text' ? msg.content[0].text : '{}'
     const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim()
     const itinerary = JSON.parse(cleaned)
+
+    // Enforce from_saved — Claude sometimes gets this wrong
+    for (const day of itinerary.days ?? []) {
+      for (const slot of day.slots ?? []) {
+        slot.from_saved = savedNames.has(slot.name?.toLowerCase())
+      }
+    }
+
     return NextResponse.json(itinerary)
   } catch (err) {
     console.log('Parse error:', err)
