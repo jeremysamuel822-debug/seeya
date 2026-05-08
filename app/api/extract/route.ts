@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
     '- PRIORITISE named restaurants, bars, and unique experiences over generic famous landmarks (e.g. "Tavern on the Green" and "Serendipity 3" are more valuable than "Central Park" or "Times Square").',
     '- Only include a generic landmark (Central Park, Eiffel Tower, etc.) if the creator gives a specific reason to visit it or pairs it with a specific activity.',
     '- Extract place names exactly as the creator says them — do not paraphrase or generalise.',
+    '- For each place, capture the time of day the creator suggests visiting it (e.g. "have lunch at X", "dinner at Y", "start your morning at Z"). Use: morning, lunch, afternoon, dinner, evening. Use null if not specified.',
     '- If truly no specific places are named, suggest 3-5 real places matching the city and vibe.',
     '- Always populate the locations array — never return it empty.',
     '- Infer vibe_tags from the tone and content style.',
@@ -86,7 +87,8 @@ export async function POST(req: NextRequest) {
     '      "type": "restaurant or attraction or hotel or experience",',
     '      "city": "city",',
     '      "notes": "one line about this place",',
-    '      "estimated_cost": "free or $ or $$ or $$$"',
+    '      "estimated_cost": "free or $ or $$ or $$$",',
+    '      "suggested_time": "morning or lunch or afternoon or dinner or evening or null"',
     '    }',
     '  ]',
     '}'

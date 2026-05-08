@@ -13,7 +13,10 @@ export async function POST(req: NextRequest) {
   const savedNames = new Set(locations.map((l: any) => l.name.toLowerCase()))
 
   const locationList = locations
-    .map((l: any) => `- ${l.name} (${l.type}, ${l.estimated_cost})${l.creator ? ` [via ${l.creator}]` : ''}: ${l.notes}`)
+    .map((l: any) => {
+      const time = l.suggested_time ? ` [creator says: ${l.suggested_time}]` : ''
+      return `- ${l.name} (${l.type}, ${l.estimated_cost})${time}${l.creator ? ` [via ${l.creator}]` : ''}: ${l.notes}`
+    })
     .join('\n')
 
   const profileLines = [
@@ -43,6 +46,7 @@ export async function POST(req: NextRequest) {
     '- Each day should have morning, afternoon, and evening slots',
     '- Keep it practical and fun',
     '- IMPORTANT: set "from_saved" to true ONLY for places that appear exactly in the known locations list above. Set it to false for every place you add yourself.',
+    '- IMPORTANT: if a location has a [creator says: X] tag, you MUST schedule it at that time of day (e.g. "lunch" → schedule in the lunch/midday slot, "dinner" → evening slot). Never move a place to a different time than what the creator specified.',
     '',
     'Return ONLY valid JSON, no other text:',
     '{',
