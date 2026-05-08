@@ -29,7 +29,6 @@ export default function SeeYa() {
   const [discoverError, setDiscoverError] = useState('')
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
   const [creatorLinks, setCreatorLinks] = useState<Record<string, string>>({})
-  const [rightPanel, setRightPanel] = useState<'itin' | 'discover'>('itin')
 
   useEffect(() => {
     const savedTrip = localStorage.getItem('seeya_trip')
@@ -89,7 +88,6 @@ export default function SeeYa() {
     if (done.length === 0) return
     setBuilding(true)
     setMobileTab('itin')
-    setRightPanel('itin')
 
     const allLocations = done.flatMap(s => s.locations.map(l => ({ ...l, creator: s.creator || l.creator })))
     const city = trip.destination || done[0].destination_city
@@ -180,31 +178,21 @@ export default function SeeYa() {
           -webkit-font-smoothing: antialiased;
         }
 
-        /* ── MOBILE SHELL ── */
+        /* ── APP SHELL ── */
         .mobile-shell {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
-          max-width: 480px;
+          max-width: 620px;
           margin: 0 auto;
           background: var(--cream);
         }
-
-        /* ── DESKTOP SHELL ── */
-        @media (min-width: 900px) {
-          .mobile-shell { display: none; }
-          .desktop-shell { display: flex; }
-        }
-        @media (max-width: 899px) {
-          .desktop-shell { display: none; }
-        }
-        .desktop-shell {
-          min-height: 100vh;
-          max-width: 1180px;
-          margin: 0 auto;
-          padding: 28px 24px;
-          gap: 20px;
-          align-items: flex-start;
+        @media (min-width: 620px) {
+          .mobile-shell {
+            margin: 0 auto;
+            box-shadow: 0 0 0 1px rgba(58,48,40,.06), 0 20px 60px rgba(58,48,40,.1);
+          }
+          body { background: var(--bg); }
         }
 
         /* ── GRADIENT HEADER ── */
@@ -486,51 +474,6 @@ export default function SeeYa() {
         .btn-added { font-size: 10px; font-weight: 600; background: var(--teal-pale); color: var(--teal-dark); border: none; border-radius: 100px; padding: 5px 14px; cursor: default; }
         .error-box { background: var(--blush-pale); border: 1.5px solid var(--blush); border-radius: 12px; padding: 11px 13px; font-size: 12px; font-weight: 500; color: var(--blush); margin-bottom: 14px; }
 
-        /* ── DESKTOP LEFT PANEL ── */
-        .desk-left {
-          width: 360px;
-          flex-shrink: 0;
-          background: var(--cream);
-          border-radius: 20px;
-          overflow: hidden;
-          box-shadow: 0 2px 0 rgba(58,48,40,.06), 0 16px 48px rgba(58,48,40,.1);
-          position: sticky;
-          top: 28px;
-          max-height: calc(100vh - 56px);
-          display: flex;
-          flex-direction: column;
-        }
-        .desk-left-scroll { flex: 1; overflow-y: auto; padding: 16px 16px; }
-
-        /* ── DESKTOP RIGHT PANEL ── */
-        .desk-right {
-          flex: 1;
-          min-width: 0;
-          background: var(--cream);
-          border-radius: 20px;
-          overflow: hidden;
-          box-shadow: 0 2px 0 rgba(58,48,40,.06), 0 16px 48px rgba(58,48,40,.1);
-          min-height: 600px;
-        }
-        .desk-right-tabs {
-          display: flex;
-          background: var(--lav-pale);
-          border-bottom: 1px solid rgba(169,143,212,.2);
-        }
-        .desk-right-tab {
-          font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-          color: var(--lav); opacity: .45;
-          padding: 10px 20px; border: none; background: none; cursor: pointer;
-          transition: opacity .15s;
-        }
-        .desk-right-tab.on { opacity: 1; border-bottom: 2.5px solid var(--lav); }
-        .desk-right-body { padding: 20px; }
-        .desk-header-logo { width: 50px; height: 50px; object-fit: contain; display: block; filter: drop-shadow(0 1px 4px rgba(58,48,40,.15)); }
-        .desk-header {
-          background: var(--grad);
-          padding: 14px 16px;
-          display: flex; align-items: center; justify-content: space-between;
-        }
       `}</style>
 
       {/* ═══════════════ MOBILE ═══════════════ */}
@@ -581,49 +524,6 @@ export default function SeeYa() {
         )}
       </div>
 
-      {/* ═══════════════ DESKTOP ═══════════════ */}
-      <div className="desktop-shell">
-        {/* Left: paste + trip details + saves */}
-        <div className="desk-left">
-          <div className="desk-header">
-            <img src="/logo.png" alt="SeeYa" className="desk-header-logo" />
-            <div className="header-right">
-              {totalPlaces > 0 && <span className="header-pill">{totalPlaces} places</span>}
-              {doneSaves > 0 && <span className="header-pill">{doneSaves} video{doneSaves > 1 ? 's' : ''}</span>}
-            </div>
-          </div>
-          <div className="desk-left-scroll">
-            <SavesPanel
-              url={url} setUrl={setUrl} addSave={addSave}
-              trip={trip} tripOpen={tripOpen} setTripOpen={setTripOpen}
-              persistTrip={persistTrip} tripSummaryTags={tripSummaryTags}
-              saves={saves} doneSaves={doneSaves} totalPlaces={totalPlaces}
-              building={building} buildItinerary={buildItinerary} removeSave={removeSave}
-            />
-          </div>
-        </div>
-
-        {/* Right: itinerary / discover */}
-        <div className="desk-right">
-          <div className="desk-right-tabs">
-            <button className={`desk-right-tab${rightPanel === 'itin' ? ' on' : ''}`} onClick={() => setRightPanel('itin')}>Itinerary</button>
-            <button className={`desk-right-tab${rightPanel === 'discover' ? ' on' : ''}`} onClick={() => setRightPanel('discover')}>Inspire Me</button>
-          </div>
-          <div className="desk-right-body">
-            {rightPanel === 'itin' && (
-              <ItinPanel building={building} itinerary={itinerary} saves={saves} creatorLinks={creatorLinks} doneSaves={doneSaves} totalPlaces={totalPlaces} />
-            )}
-            {rightPanel === 'discover' && (
-              <DiscoverPanel
-                form={discoverForm} setForm={setDiscoverForm}
-                run={runDiscover} discovering={discovering}
-                results={discoverResults} error={discoverError}
-                addedIds={addedIds} addCreator={addCreatorToPlan}
-              />
-            )}
-          </div>
-        </div>
-      </div>
     </>
   )
 }
