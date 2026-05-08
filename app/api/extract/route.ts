@@ -41,7 +41,7 @@ async function fetchTranscript(videoId: string): Promise<string> {
   const xml = await xmlRes.text()
 
   // Format 3: <p t="ms"><s>word</s>...</p> — used by Android InnerTube response
-  const pMatches = [...xml.matchAll(/<p\s[^>]*>([\s\S]*?)<\/p>/g)]
+  const pMatches = [...xml.matchAll(/<p\s[^>]*>([\s\S]*?)<\/p>/g)]  // [\s\S] used instead of . with s-flag (ES2018+)
   let texts: string
   if (pMatches.length > 0) {
     texts = pMatches.map(m => {
@@ -51,7 +51,7 @@ async function fetchTranscript(videoId: string): Promise<string> {
     }).join(' ')
   } else {
     // Classic format fallback: <text start="s" dur="s">content</text>
-    texts = [...xml.matchAll(/<text[^>]*>(.*?)<\/text>/gs)].map(m => m[1]).join(' ')
+    texts = [...xml.matchAll(/<text[^>]*>([\s\S]*?)<\/text>/g)].map(m => m[1]).join(' ')
   }
 
   const decoded = texts
