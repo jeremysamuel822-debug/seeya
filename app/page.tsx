@@ -40,6 +40,8 @@ export default function SeeYa() {
   const [discovering, setDiscovering] = useState(false)
   const [discoverError, setDiscoverError] = useState('')
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
+  const [creatorLinks, setCreatorLinks] = useState<Record<string, string>>({})
+  const [buildingStatus, setBuildingStatus] = useState('')
 
   useEffect(() => {
     const done = localStorage.getItem('seeya_onboarding_done')
@@ -49,12 +51,58 @@ export default function SeeYa() {
   }, [])
 
   function completeOnboarding() {
+    const p = profile
     localStorage.setItem('seeya_onboarding_done', '1')
-    localStorage.setItem('seeya_profile', JSON.stringify(profile))
+    localStorage.setItem('seeya_profile', JSON.stringify(p))
     setOnboardingDone(true)
-    if (profile.destination && !profile.notSureYet) {
-      setDiscoverForm(f => ({ ...f, destination: profile.destination, tripType: profile.travelers, budget: profile.budget }))
+    setTab('itin')
+    if (p.destination && !p.notSureYet) {
+      autoGenerateFromOnboarding(p)
+    } else {
+      setTab('discover')
     }
+  }
+
+  async function autoGenerateFromOnboarding(p: TripProfile) {
+    setBuilding(true)
+    setBuildingStatus(`Finding the best ${p.destination} creators…`)
+    try {
+      const discoverRes = await fetch('/api/discover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ destination: p.destination, vibe: p.vibe || p.focus.join(' '), tripType: p.travelers, budget: p.budget })
+      })
+      const creators: DiscoverResult[] = await discoverRes.json()
+      if (!Array.isArray(creators) || creators.length === 0) throw new Error('No creators found')
+
+      const links: Record<string, string> = {}
+      creators.forEach(c => { links[c.channelHandle] = c.videoUrl })
+      setCreatorLinks(links)
+
+      const newSaves: Save[] = creators.map(c => ({
+        url: c.videoUrl, platform: 'youtube', title: c.title,
+        destination_city: c.destination_city, destination_country: c.destination_country,
+        vibe_tags: c.vibe_tags, locations: c.locations, status: 'done', creator: c.channelHandle
+      }))
+      setSaves(newSaves)
+
+      setBuildingStatus('Building your personalised itinerary…')
+      const allLocations = newSaves.flatMap(s => s.locations)
+      const city = creators[0].destination_city || p.destination
+      const country = creators[0].destination_country
+      const vibe_tags = [...new Set(newSaves.flatMap(s => s.vibe_tags))]
+      const tripDays = p.tripLength === 'Weekend' ? 2 : p.tripLength === '4-6 days' ? 5 : 3
+
+      const itinRes = await fetch('/api/generate-itinerary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locations: allLocations, city, country, vibe_tags, days: tripDays, travelers: p.travelers, budget: p.budget, focus: p.focus, priorities: p.priorities, vibe: p.vibe })
+      })
+      const itinData = await itinRes.json()
+      setItinerary(itinData)
+    } catch { }
+    setBuilding(false)
+    setBuildingStatus('')
   }
 
   function skipOnboarding() {
@@ -629,8 +677,8 @@ export default function SeeYa() {
                 {building ? (
                   <div className="loading-state">
                     <div className="loading-icon">✈</div>
-                    <div style={{ fontFamily: 'var(--font-h)', fontSize: 16, color: 'var(--brown)' }}>Building your itinerary…</div>
-                    <div style={{ fontSize: 12, color: 'var(--brown3)', marginTop: 6 }}>Claude is planning your trip</div>
+                    <div style={{ fontFamily: 'var(--font-h)', fontSize: 16, color: 'var(--brown)' }}>{buildingStatus || 'Building your itinerary…'}</div>
+                    <div style={{ fontSize: 12, color: 'var(--brown3)', marginTop: 6 }}>This takes about 30 seconds</div>
                   </div>
                 ) : !itinerary ? (
                   <div className="empty-state">
@@ -644,7 +692,24 @@ export default function SeeYa() {
                       <div className="itin-title">{itinerary.title}</div>
                       <div className="itin-sub">{itinerary.city}, {itinerary.country} · {itinerary.days.length} days</div>
                     </div>
-                    {itinerary.days.map(day => (
+                    {Object.keys(creatorLinks).length > 0 && (
+                  <div style={{ background: 'var(--cream2)', border: '2px solid var(--brown)', borderRadius: 14, padding: '12px 14px', marginBottom: 20 }}>
+                    <div className="sec-lbl" style={{ marginBottom: 10 }}>Inspired by</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {saves.filter(s => s.creator && creatorLinks[s.creator]).map((s, i) => (
+                        <a key={i} href={s.url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#FFF0EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>▶</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--brown)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.title}</div>
+                            <div style={{ fontSize: 10, color: 'var(--coral-dark)', fontWeight: 700 }}>{s.creator}</div>
+                          </div>
+                          <span style={{ fontSize: 10, color: 'var(--brown3)', fontWeight: 700, flexShrink: 0 }}>Watch ↗</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {itinerary.days.map(day => (
                       <div key={day.day} className="day-block">
                         <div className="day-lbl">Day {day.day} — {day.theme}</div>
                         {day.slots.map((slot, j) => (
@@ -660,7 +725,11 @@ export default function SeeYa() {
                               <div style={{ fontSize: 11, color: 'var(--brown2)', marginBottom: 6 }}>{slot.notes}</div>
                               <div className="chips">
                                 <span className={`chip ${slot.from_saved ? 'chip-saved' : 'chip-added'}`}>{slot.from_saved ? '✦ From your saves' : '+ Added by AI'}</span>
-                                {slot.creator && <span className="chip chip-creator">🎥 {slot.creator}</span>}
+                                {slot.creator && (
+                              creatorLinks[slot.creator]
+                                ? <a href={creatorLinks[slot.creator]} target="_blank" rel="noreferrer" className="chip chip-creator" style={{ textDecoration: 'none' }}>🎥 {slot.creator} ↗</a>
+                                : <span className="chip chip-creator">🎥 {slot.creator}</span>
+                            )}
                                 <span className="chip chip-cost" style={{ color: costColor(slot.estimated_cost) }}>{slot.estimated_cost}</span>
                               </div>
                             </div>
