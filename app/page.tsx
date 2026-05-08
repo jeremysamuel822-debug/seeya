@@ -297,8 +297,13 @@ export default function SeeYa() {
         .itin-title{font-family:var(--font-h);font-size:18px;color:var(--brown);margin-bottom:4px;}
         .itin-sub{font-size:11px;font-weight:600;color:var(--brown3);}
         .loading-state{text-align:center;padding:40px 20px;}
-        .loading-icon{font-size:32px;margin-bottom:12px;animation:spin 1.5s linear infinite;display:inline-block;}
-        @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+        .paper-plane{display:block;margin:0 auto 16px;animation:float 2.4s ease-in-out infinite;}
+        @keyframes float{
+          0%  {transform:translateY(0px) rotate(-8deg);}
+          40% {transform:translateY(-14px) rotate(2deg);}
+          60% {transform:translateY(-16px) rotate(-2deg);}
+          100%{transform:translateY(0px) rotate(-8deg);}
+        }
         .discover-form{background:var(--cream2);border:2.5px solid var(--brown);border-radius:18px;padding:16px;margin-bottom:20px;}
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
         .form-group{display:flex;flex-direction:column;gap:4px;}
@@ -622,7 +627,10 @@ export default function SeeYa() {
 
                 {discovering && (
                   <div className="loading-state">
-                    <div className="loading-icon">✈</div>
+                    <svg className="paper-plane" width="48" height="48" viewBox="0 0 24 24" fill="none">
+                      <path d="M22 2L11 13" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="var(--coral-light)"/>
+                    </svg>
                     <div style={{ fontFamily: 'var(--font-h)', fontSize: 16, color: 'var(--brown)' }}>Searching for creators…</div>
                     <div style={{ fontSize: 12, color: 'var(--brown3)', marginTop: 6 }}>Finding the best {discoverForm.destination} content</div>
                   </div>
@@ -676,7 +684,10 @@ export default function SeeYa() {
               <div className="body">
                 {building ? (
                   <div className="loading-state">
-                    <div className="loading-icon">✈</div>
+                    <svg className="paper-plane" width="48" height="48" viewBox="0 0 24 24" fill="none">
+                      <path d="M22 2L11 13" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="var(--coral-light)"/>
+                    </svg>
                     <div style={{ fontFamily: 'var(--font-h)', fontSize: 16, color: 'var(--brown)' }}>{buildingStatus || 'Building your itinerary…'}</div>
                     <div style={{ fontSize: 12, color: 'var(--brown3)', marginTop: 6 }}>This takes about 30 seconds</div>
                   </div>
