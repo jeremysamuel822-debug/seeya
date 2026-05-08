@@ -34,10 +34,9 @@ export async function POST(req: NextRequest) {
         'Description: ' + (snippet.description || '(no description — Short format)').slice(0, 4000),
         '',
         'Instructions:',
-        '- If specific places are named (restaurants, hotels, attractions), extract them exactly.',
-        '- If NO specific places are named but a city is mentioned or implied, suggest 4-6 real,',
-        '  well-known places that match the vibe of the title (e.g. "staycation" → boutique hotels,',
-        '  spas; "foodie" → notable restaurants; "nightlife" → bars and clubs).',
+        '- If specific places are named in the title or description, extract them and set "from_content": true.',
+        '- If NO specific places are named, suggest 4-6 real well-known places that match the city and vibe,',
+        '  but set "from_content": false on every suggested place.',
         '- Always populate the locations array — never return it empty.',
         '- Infer vibe_tags from the title and content style.',
         '',
@@ -52,7 +51,8 @@ export async function POST(req: NextRequest) {
         '      "type": "restaurant or attraction or hotel or experience",',
         '      "city": "city",',
         '      "notes": "one line about this place",',
-        '      "estimated_cost": "free or $ or $$ or $$$"',
+        '      "estimated_cost": "free or $ or $$ or $$$",',
+        '      "from_content": true',
         '    }',
         '  ]',
         '}'
@@ -77,7 +77,10 @@ export async function POST(req: NextRequest) {
           destination_city: extracted.destination_city || destination,
           destination_country: extracted.destination_country || '',
           vibe_tags: extracted.vibe_tags || [],
-          locations: (extracted.locations || []).map((l: any) => ({ ...l, creator: channelHandle }))
+          locations: (extracted.locations || []).map((l: any) => ({
+            ...l,
+            creator: l.from_content ? channelHandle : undefined
+          }))
         }
       } catch {
         return null
