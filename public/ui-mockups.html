@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SeeYa — UI Concepts for Gracie</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#F0EDE8;font-family:'DM Sans',sans-serif;padding:40px 20px;}
+.page-title{text-align:center;font-family:'Playfair Display',serif;font-size:28px;color:#1A1A1A;margin-bottom:6px;}
+.page-sub{text-align:center;font-size:14px;color:#888;margin-bottom:48px;font-family:'DM Sans',sans-serif;}
+
+/* Layout */
+.concept{margin-bottom:80px;}
+.concept-header{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.concept-badge{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:20px;}
+.concept-title{font-size:22px;font-weight:700;}
+.concept-desc{font-size:13px;color:#888;margin-top:2px;}
+.screens{display:flex;gap:20px;overflow-x:auto;padding-bottom:12px;}
+.screen-wrap{flex-shrink:0;}
+.screen-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#AAA;margin-bottom:10px;text-align:center;}
+.phone{width:300px;height:620px;border-radius:28px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15);position:relative;display:flex;flex-direction:column;}
+
+/* ═══════════════════════════════════════
+   VERSION 1 — CASUAL
+═══════════════════════════════════════ */
+.c1-bg{background:#FFF5E6;}
+.c1-card{background:#FFFFFF;border-radius:20px;box-shadow:0 4px 20px rgba(255,107,71,.1);}
+.c1-primary{color:#FF6B47;}
+.c1-btn{background:#FF6B47;color:#fff;border:none;border-radius:16px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;padding:14px;width:100%;}
+.c1-btn-outline{background:#fff;color:#FF6B47;border:2.5px solid #FF6B47;border-radius:16px;font-family:'Fredoka One',cursive;font-size:13px;cursor:pointer;padding:10px;width:100%;}
+
+/* Casual Onboarding */
+.c1-ob{background:#FFF5E6;flex:1;padding:20px 18px;display:flex;flex-direction:column;}
+.c1-ob-progress{display:flex;gap:5px;margin-bottom:24px;}
+.c1-ob-dot{flex:1;height:6px;border-radius:3px;background:#FFE0D4;}
+.c1-ob-dot.on{background:#FF6B47;}
+.c1-ob-logo{font-family:'Fredoka One',cursive;font-size:22px;color:#FF6B47;text-align:center;margin-bottom:16px;}
+.c1-ob-emoji{font-size:44px;text-align:center;margin-bottom:10px;}
+.c1-ob-title{font-family:'Fredoka One',cursive;font-size:22px;color:#2C1810;text-align:center;margin-bottom:4px;}
+.c1-ob-sub{font-size:11px;font-weight:600;color:#C4906A;text-align:center;margin-bottom:20px;}
+.c1-input{width:100%;background:#FFF0E6;border:2px solid #FFD4B8;border-radius:14px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:13px;color:#2C1810;outline:none;margin-bottom:10px;}
+.c1-lbl{font-family:'Fredoka One',cursive;font-size:10px;letter-spacing:.06em;color:#C4906A;text-transform:uppercase;margin-bottom:5px;display:block;}
+.c1-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.c1-pill{font-family:'Fredoka One',cursive;font-size:11px;padding:6px 14px;border-radius:20px;border:2px solid #FFD4B8;background:#FFF0E6;color:#C4906A;cursor:pointer;}
+.c1-pill.on{background:#FF6B47;border-color:#FF6B47;color:#fff;}
+.c1-skip{font-family:'Fredoka One',cursive;font-size:12px;color:#C4906A;text-align:center;margin-top:8px;cursor:pointer;}
+
+/* Casual Nav */
+.c1-nav{background:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #FFE0D4;}
+.c1-nav-logo{font-family:'Fredoka One',cursive;font-size:20px;color:#FF6B47;}
+.c1-nav-pill{font-family:'Fredoka One',cursive;font-size:10px;background:#FFD166;color:#7A5C00;border-radius:20px;padding:3px 10px;}
+.c1-nav-btn{font-family:'Fredoka One',cursive;font-size:11px;background:#FF6B47;color:#fff;border-radius:20px;border:none;padding:5px 14px;cursor:pointer;}
+.c1-tabs{display:flex;background:#FFF0E6;padding:0 12px;overflow-x:auto;}
+.c1-tab{font-family:'Fredoka One',cursive;font-size:11px;color:#C4906A;padding:9px 0;margin-right:16px;border:none;background:none;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;}
+.c1-tab.on{color:#FF6B47;border-bottom-color:#FF6B47;}
+.c1-body{flex:1;padding:14px 14px;background:#FFF5E6;overflow:hidden;}
+.c1-input-card{background:#fff;border-radius:18px;padding:12px;margin-bottom:14px;box-shadow:0 2px 12px rgba(255,107,71,.08);}
+.c1-save-card{background:#fff;border-radius:16px;padding:10px;display:flex;gap:10px;align-items:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.c1-thumb{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#FF6B47,#FFD166);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.c1-tag{font-size:8px;font-weight:800;padding:2px 7px;border-radius:8px;background:#FFF0E6;color:#FF6B47;}
+.c1-tag-mint{background:#E6FAF8;color:#2DB5A8;}
+.c1-stop-card{background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:7px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.c1-itin-header{background:linear-gradient(135deg,#FF6B47,#FFD166);border-radius:18px;padding:14px;margin-bottom:14px;color:#fff;}
+.c1-day-badge{display:inline-block;background:#FFD166;color:#7A5C00;font-family:'Fredoka One',cursive;font-size:11px;padding:4px 12px;border-radius:10px;margin-bottom:10px;}
+.c1-dot{width:9px;height:9px;border-radius:50%;background:#FF6B47;flex-shrink:0;margin-top:3px;}
+.c1-line{width:2px;background:#FFE0D4;flex:1;margin:3px auto;}
+
+/* ═══════════════════════════════════════
+   VERSION 2 — CLEAN
+═══════════════════════════════════════ */
+.c2-bg{background:#F7F7F7;}
+.c2-primary{color:#1A6B57;}
+.c2-btn{background:#1A6B57;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;padding:13px;width:100%;letter-spacing:.01em;}
+.c2-input{width:100%;background:#fff;border:1.5px solid #E0E0E0;border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:#1A1A1A;outline:none;margin-bottom:10px;}
+.c2-input:focus{border-color:#1A6B57;}
+
+/* Clean Onboarding */
+.c2-ob{background:#fff;flex:1;padding:24px 20px;display:flex;flex-direction:column;}
+.c2-ob-progress{height:3px;background:#F0F0F0;border-radius:2px;margin-bottom:28px;overflow:hidden;}
+.c2-ob-fill{height:100%;width:25%;background:#1A6B57;border-radius:2px;}
+.c2-ob-logo{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#1A1A1A;letter-spacing:.05em;text-align:center;margin-bottom:24px;}
+.c2-ob-step{font-size:10px;font-weight:600;color:#1A6B57;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.c2-ob-title{font-size:22px;font-weight:700;color:#1A1A1A;margin-bottom:4px;line-height:1.2;}
+.c2-ob-sub{font-size:12px;color:#9E9E9E;margin-bottom:22px;line-height:1.5;}
+.c2-lbl{font-size:11px;font-weight:600;color:#6B6B6B;margin-bottom:5px;display:block;letter-spacing:.02em;}
+.c2-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.c2-pill{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:6px 14px;border-radius:8px;border:1.5px solid #E0E0E0;background:#fff;color:#6B6B6B;cursor:pointer;}
+.c2-pill.on{background:#1A6B57;border-color:#1A6B57;color:#fff;}
+.c2-skip{font-size:12px;color:#C0C0C0;text-align:center;margin-top:10px;cursor:pointer;font-weight:500;}
+
+/* Clean Nav */
+.c2-nav{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0F0F0;}
+.c2-nav-logo{font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#1A1A1A;letter-spacing:.04em;}
+.c2-nav-pill{font-size:10px;font-weight:600;background:#E8F5F1;color:#1A6B57;border-radius:6px;padding:4px 10px;}
+.c2-nav-btn{font-size:11px;font-weight:600;background:#1A6B57;color:#fff;border-radius:8px;border:none;padding:6px 14px;cursor:pointer;}
+.c2-tabs{display:flex;background:#fff;padding:0 16px;border-bottom:1px solid #F0F0F0;}
+.c2-tab{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#ADADAD;padding:10px 0;margin-right:18px;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
+.c2-tab.on{color:#1A1A1A;border-bottom-color:#1A6B57;font-weight:600;}
+.c2-body{flex:1;padding:14px;background:#F7F7F7;overflow:hidden;}
+.c2-input-card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.c2-save-card{background:#fff;border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.c2-thumb{width:42px;height:42px;border-radius:8px;background:#E8F5F1;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.c2-tag{font-size:8px;font-weight:600;padding:2px 7px;border-radius:5px;background:#F0F0F0;color:#6B6B6B;}
+.c2-tag-green{background:#E8F5F1;color:#1A6B57;}
+.c2-stop-card{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.c2-itin-header{background:#1A6B57;border-radius:14px;padding:14px;margin-bottom:12px;color:#fff;}
+.c2-day-badge{display:inline-block;background:#F0F0F0;color:#6B6B6B;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;margin-bottom:8px;letter-spacing:.04em;}
+.c2-dot{width:8px;height:8px;border-radius:50%;background:#1A6B57;flex-shrink:0;margin-top:4px;}
+.c2-line{width:1px;background:#E8E8E8;flex:1;margin:3px auto;}
+
+/* ═══════════════════════════════════════
+   VERSION 3 — CHIC
+═══════════════════════════════════════ */
+.c3-bg{background:#FAF7F2;}
+.c3-primary{color:#1C2B3A;}
+.c3-gold{color:#C9A84C;}
+.c3-btn{background:#1C2B3A;color:#FAF7F2;border:none;border-radius:4px;font-family:'Lato',sans-serif;font-size:13px;font-weight:700;cursor:pointer;padding:14px;width:100%;letter-spacing:.12em;text-transform:uppercase;}
+.c3-btn-outline{background:transparent;color:#1C2B3A;border:1px solid #1C2B3A;border-radius:4px;font-family:'Lato',sans-serif;font-size:11px;font-weight:700;cursor:pointer;padding:10px;width:100%;letter-spacing:.1em;text-transform:uppercase;}
+.c3-input{width:100%;background:transparent;border:none;border-bottom:1px solid #D4C5B0;padding:10px 0;font-family:'Lato',sans-serif;font-size:13px;color:#1C2B3A;outline:none;margin-bottom:14px;}
+
+/* Chic Onboarding */
+.c3-ob{background:#FAF7F2;flex:1;padding:24px 22px;display:flex;flex-direction:column;}
+.c3-ob-progress{display:flex;gap:4px;margin-bottom:28px;}
+.c3-ob-dot{flex:1;height:1px;background:#D4C5B0;}
+.c3-ob-dot.on{background:#1C2B3A;}
+.c3-ob-logo{font-family:'Playfair Display',serif;font-size:20px;color:#1C2B3A;text-align:center;margin-bottom:28px;letter-spacing:.05em;}
+.c3-ob-step{font-family:'Lato',sans-serif;font-size:9px;font-weight:700;color:#C9A84C;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;}
+.c3-ob-title{font-family:'Playfair Display',serif;font-size:24px;color:#1C2B3A;margin-bottom:6px;line-height:1.2;}
+.c3-ob-sub{font-family:'Lato',sans-serif;font-size:11px;color:#8A7E6F;margin-bottom:24px;line-height:1.6;}
+.c3-lbl{font-family:'Lato',sans-serif;font-size:9px;font-weight:700;color:#8A7E6F;margin-bottom:6px;display:block;letter-spacing:.12em;text-transform:uppercase;}
+.c3-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.c3-pill{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;padding:6px 14px;border-radius:2px;border:1px solid #D4C5B0;background:transparent;color:#8A7E6F;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;}
+.c3-pill.on{background:#1C2B3A;border-color:#1C2B3A;color:#FAF7F2;}
+.c3-skip{font-family:'Lato',sans-serif;font-size:10px;color:#B0A090;text-align:center;margin-top:10px;cursor:pointer;letter-spacing:.06em;}
+.c3-divider{height:1px;background:#E8E0D0;margin:12px 0;}
+
+/* Chic Nav */
+.c3-nav{background:#FAF7F2;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E8E0D0;}
+.c3-nav-logo{font-family:'Playfair Display',serif;font-size:17px;color:#1C2B3A;letter-spacing:.04em;}
+.c3-nav-pill{font-family:'Lato',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;border:1px solid #C9A84C;border-radius:2px;padding:3px 8px;}
+.c3-nav-btn{font-family:'Lato',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#1C2B3A;color:#FAF7F2;border:none;border-radius:2px;padding:6px 12px;cursor:pointer;}
+.c3-tabs{display:flex;background:#FAF7F2;padding:0 16px;border-bottom:1px solid #E8E0D0;}
+.c3-tab{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#B0A090;padding:10px 0;margin-right:16px;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
+.c3-tab.on{color:#1C2B3A;border-bottom-color:#C9A84C;}
+.c3-body{flex:1;padding:14px;background:#FAF7F2;overflow:hidden;}
+.c3-input-card{background:#fff;border:1px solid #E8E0D0;border-radius:4px;padding:12px;margin-bottom:12px;}
+.c3-save-card{background:#fff;border:1px solid #E8E0D0;border-radius:4px;padding:10px 12px;display:flex;gap:10px;align-items:center;margin-bottom:6px;}
+.c3-thumb{width:42px;height:42px;border-radius:2px;background:#F5EFE4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid #E8E0D0;}
+.c3-tag{font-family:'Lato',sans-serif;font-size:7px;font-weight:700;padding:2px 6px;border-radius:2px;background:#F5EFE4;color:#8A7E6F;letter-spacing:.06em;text-transform:uppercase;}
+.c3-tag-gold{background:#FBF5E6;color:#C9A84C;border:1px solid #C9A84C;}
+.c3-stop-card{background:#fff;border:1px solid #E8E0D0;border-radius:4px;padding:10px 12px;margin-bottom:6px;}
+.c3-itin-header{background:#1C2B3A;border-radius:4px;padding:14px;margin-bottom:12px;color:#FAF7F2;}
+.c3-day-badge{display:inline-block;border:1px solid #D4C5B0;color:#8A7E6F;font-family:'Lato',sans-serif;font-size:9px;font-weight:700;padding:4px 10px;border-radius:2px;margin-bottom:8px;letter-spacing:.08em;text-transform:uppercase;}
+.c3-dot{width:7px;height:7px;border-radius:50%;background:#C9A84C;flex-shrink:0;margin-top:4px;}
+.c3-line{width:1px;background:#E8E0D0;flex:1;margin:3px auto;}
+</style>
+</head>
+<body>
+
+<div class="page-title">SeeYa — UI Concepts</div>
+<div class="page-sub">Three directions for Gracie to review. Scroll down to compare all three.</div>
+
+<!-- ═══════════════════ VERSION 1: CASUAL ═══════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-badge" style="background:#FFE8E0;color:#FF6B47;">Version 1</span>
+    <div>
+      <div class="concept-title" style="font-family:'Fredoka One',cursive;color:#FF6B47;">Casual ✨</div>
+      <div class="concept-desc">Warm, fun, and friendly — feels like planning a trip with your best friend</div>
+    </div>
+  </div>
+  <div class="screens">
+
+    <!-- Casual Onboarding -->
+    <div class="screen-wrap">
+      <div class="screen-label">Onboarding</div>
+      <div class="phone" style="background:#FFF5E6;">
+        <div class="c1-ob">
+          <div class="c1-ob-progress">
+            <div class="c1-ob-dot on"></div>
+            <div class="c1-ob-dot"></div>
+            <div class="c1-ob-dot"></div>
+            <div class="c1-ob-dot"></div>
+          </div>
+          <div class="c1-ob-logo">SeeYa Travel ✈</div>
+          <div class="c1-ob-emoji">🌍</div>
+          <div class="c1-ob-title">Let's plan your trip!</div>
+          <div class="c1-ob-sub">Tell us about your dream adventure 🎉</div>
+          <label class="c1-lbl">Your name</label>
+          <input class="c1-input" placeholder="What do we call you?" />
+          <label class="c1-lbl">Where are you going?</label>
+          <input class="c1-input" placeholder="Tokyo, Bali, Rome…" />
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+            <input type="checkbox" style="accent-color:#FF6B47;" />
+            <span style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:#C4906A;">Not sure yet — inspire me! ✨</span>
+          </div>
+          <label class="c1-lbl">Trip length</label>
+          <div class="c1-pills">
+            <span class="c1-pill on">Weekend</span>
+            <span class="c1-pill">4-6 days</span>
+            <span class="c1-pill">1-2 weeks</span>
+            <span class="c1-pill">2+ weeks</span>
+          </div>
+          <button class="c1-btn" style="margin-top:auto;">Continue →</button>
+          <div class="c1-skip">Skip for now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Casual Inspiration -->
+    <div class="screen-wrap">
+      <div class="screen-label">Inspiration</div>
+      <div class="phone" style="background:#FFF5E6;">
+        <div class="c1-nav">
+          <span class="c1-nav-logo">SeeYa ✈</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="c1-nav-pill">2 saves ✦</span>
+            <button class="c1-nav-btn">Plan trip ✈</button>
+          </div>
+        </div>
+        <div class="c1-tabs">
+          <button class="c1-tab on">Inspiration</button>
+          <button class="c1-tab">✨ Inspire Me</button>
+          <button class="c1-tab">Itinerary</button>
+          <button class="c1-tab">Map</button>
+        </div>
+        <div class="c1-body">
+          <div class="c1-input-card">
+            <div style="font-family:'Fredoka One',cursive;font-size:11px;color:#C4906A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Paste a link to save</div>
+            <div style="display:flex;gap:6px;">
+              <input style="flex:1;background:#FFF5E6;border:2px solid #FFD4B8;border-radius:12px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:11px;color:#C4906A;" placeholder="YouTube, TikTok, blog…" />
+              <button style="background:#4ECDC4;color:#fff;border:none;border-radius:12px;padding:8px 14px;font-family:'Fredoka One',cursive;font-size:12px;cursor:pointer;">Save</button>
+            </div>
+          </div>
+          <div style="font-family:'Fredoka One',cursive;font-size:10px;color:#C4906A;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Your saves 🎥</div>
+          <div class="c1-save-card">
+            <div class="c1-thumb">🍜</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:11px;font-weight:700;color:#2C1810;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">7 Best Dessert Spots in Tokyo 🍰</div>
+              <div style="font-size:9px;color:#C4906A;font-weight:600;margin:2px 0;">📍 Tokyo, Japan</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                <span class="c1-tag">🎥 @tokyofoodie</span>
+                <span class="c1-tag c1-tag-mint">desserts</span>
+                <span class="c1-tag c1-tag-mint">aesthetic</span>
+              </div>
+            </div>
+          </div>
+          <div class="c1-save-card">
+            <div class="c1-thumb" style="background:linear-gradient(135deg,#4ECDC4,#95D5B2);">🏛️</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:11px;font-weight:700;color:#2C1810;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Hidden gems in Asakusa 🌸</div>
+              <div style="font-size:9px;color:#C4906A;font-weight:600;margin:2px 0;">📍 Tokyo, Japan</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                <span class="c1-tag">culture</span>
+                <span class="c1-tag">hidden gem</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <button style="width:100%;background:linear-gradient(135deg,#FF6B47,#FFD166);color:#fff;border:none;border-radius:16px;padding:12px;font-family:'Fredoka One',cursive;font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(255,107,71,.3);">Plan my trip ✈</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Casual Itinerary -->
+    <div class="screen-wrap">
+      <div class="screen-label">Itinerary</div>
+      <div class="phone" style="background:#FFF5E6;">
+        <div class="c1-nav">
+          <span class="c1-nav-logo">SeeYa ✈</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="c1-nav-pill">2 saves ✦</span>
+            <button class="c1-nav-btn">Plan trip ✈</button>
+          </div>
+        </div>
+        <div class="c1-tabs">
+          <button class="c1-tab">Inspiration</button>
+          <button class="c1-tab">✨ Inspire Me</button>
+          <button class="c1-tab on">Itinerary</button>
+          <button class="c1-tab">Map</button>
+        </div>
+        <div class="c1-body">
+          <div class="c1-itin-header">
+            <div style="font-family:'Fredoka One',cursive;font-size:17px;margin-bottom:3px;">Sweet Tokyo Girls Trip 🌸</div>
+            <div style="font-size:10px;opacity:.85;font-weight:600;">Tokyo, Japan · 3 days</div>
+          </div>
+          <div class="c1-day-badge">Day 1 — Dessert Crawl 🍰</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;gap:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+                <div style="font-size:8px;font-weight:700;color:#C4906A;">AM</div>
+                <div class="c1-dot"></div>
+                <div class="c1-line"></div>
+              </div>
+              <div class="c1-stop-card" style="flex:1;">
+                <div style="font-size:11px;font-weight:700;color:#2C1810;margin-bottom:1px;">Flipper's Soufflé Pancakes</div>
+                <div style="font-size:9px;color:#C4906A;margin-bottom:5px;">restaurant</div>
+                <div style="font-size:10px;color:#8B6355;margin-bottom:5px;">Famous jiggly soufflé pancakes in Omotesando</div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <span class="c1-tag" style="background:#E6FAF8;color:#2DB5A8;">✦ From your saves</span>
+                  <span class="c1-tag" style="background:#FFE8E0;color:#FF6B47;">🎥 @tokyofoodie ↗</span>
+                  <span class="c1-tag">$$</span>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+                <div style="font-size:8px;font-weight:700;color:#C4906A;">PM</div>
+                <div class="c1-dot"></div>
+                <div class="c1-line"></div>
+              </div>
+              <div class="c1-stop-card" style="flex:1;">
+                <div style="font-size:11px;font-weight:700;color:#2C1810;margin-bottom:1px;">Shibuya Crossing</div>
+                <div style="font-size:9px;color:#C4906A;margin-bottom:5px;">attraction</div>
+                <div style="font-size:10px;color:#8B6355;margin-bottom:5px;">Iconic scramble crossing, best at sunset</div>
+                <div style="display:flex;gap:4px;">
+                  <span class="c1-tag" style="background:#EEF5FF;color:#4A90D9;">+ Added by AI</span>
+                  <span class="c1-tag">free</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ VERSION 2: CLEAN ═══════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-badge" style="background:#E8F5F1;color:#1A6B57;">Version 2</span>
+    <div>
+      <div class="concept-title" style="font-family:'DM Sans',sans-serif;color:#1A1A1A;">Clean</div>
+      <div class="concept-desc">Minimal and modern — clear, breathable, feels like a polished product</div>
+    </div>
+  </div>
+  <div class="screens">
+
+    <!-- Clean Onboarding -->
+    <div class="screen-wrap">
+      <div class="screen-label">Onboarding</div>
+      <div class="phone" style="background:#fff;">
+        <div class="c2-ob">
+          <div class="c2-ob-progress"><div class="c2-ob-fill"></div></div>
+          <div class="c2-ob-logo">SEEYA TRAVEL</div>
+          <div class="c2-ob-step">Step 1 of 4</div>
+          <div class="c2-ob-title">Let's plan your trip</div>
+          <div class="c2-ob-sub">A few quick questions so we can personalise everything for you.</div>
+          <label class="c2-lbl">Your name</label>
+          <input class="c2-input" placeholder="What should we call you?" />
+          <label class="c2-lbl">Destination</label>
+          <input class="c2-input" placeholder="Tokyo, Bali, Rome…" />
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+            <input type="checkbox" style="accent-color:#1A6B57;" />
+            <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:#9E9E9E;">Not sure yet — inspire me</span>
+          </div>
+          <label class="c2-lbl">Trip length</label>
+          <div class="c2-pills">
+            <span class="c2-pill on">Weekend</span>
+            <span class="c2-pill">4-6 days</span>
+            <span class="c2-pill">1-2 weeks</span>
+            <span class="c2-pill">2+ weeks</span>
+          </div>
+          <button class="c2-btn" style="margin-top:auto;">Continue</button>
+          <div class="c2-skip">Skip for now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clean Inspiration -->
+    <div class="screen-wrap">
+      <div class="screen-label">Inspiration</div>
+      <div class="phone" style="background:#F7F7F7;">
+        <div class="c2-nav">
+          <span class="c2-nav-logo">SEEYA</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="c2-nav-pill">2 saves</span>
+            <button class="c2-nav-btn">Plan trip</button>
+          </div>
+        </div>
+        <div class="c2-tabs">
+          <button class="c2-tab on">Inspiration</button>
+          <button class="c2-tab">Inspire Me</button>
+          <button class="c2-tab">Itinerary</button>
+          <button class="c2-tab">Map</button>
+        </div>
+        <div class="c2-body">
+          <div class="c2-input-card">
+            <div style="font-size:10px;font-weight:600;color:#ADADAD;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Paste a link</div>
+            <div style="display:flex;gap:6px;">
+              <input style="flex:1;background:#F7F7F7;border:1.5px solid #E8E8E8;border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:11px;color:#ADADAD;" placeholder="YouTube, TikTok, blog…" />
+              <button style="background:#1A6B57;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">Save</button>
+            </div>
+          </div>
+          <div style="font-size:10px;font-weight:600;color:#ADADAD;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Saved content</div>
+          <div class="c2-save-card">
+            <div class="c2-thumb">🍜</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:11px;font-weight:600;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">7 Best Dessert Spots in Tokyo</div>
+              <div style="font-size:9px;color:#ADADAD;margin:2px 0;">Tokyo, Japan</div>
+              <div style="display:flex;gap:4px;">
+                <span class="c2-tag c2-tag-green">@tokyofoodie</span>
+                <span class="c2-tag">desserts</span>
+              </div>
+            </div>
+            <span style="font-size:9px;color:#1A6B57;font-weight:600;">✓</span>
+          </div>
+          <div class="c2-save-card">
+            <div class="c2-thumb" style="background:#F0F0F0;">🏛️</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:11px;font-weight:600;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Hidden gems in Asakusa</div>
+              <div style="font-size:9px;color:#ADADAD;margin:2px 0;">Tokyo, Japan</div>
+              <div style="display:flex;gap:4px;">
+                <span class="c2-tag">culture</span>
+                <span class="c2-tag">hidden gems</span>
+              </div>
+            </div>
+            <span style="font-size:9px;color:#1A6B57;font-weight:600;">✓</span>
+          </div>
+          <button style="width:100%;background:#1A6B57;color:#fff;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;">Build my itinerary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clean Itinerary -->
+    <div class="screen-wrap">
+      <div class="screen-label">Itinerary</div>
+      <div class="phone" style="background:#F7F7F7;">
+        <div class="c2-nav">
+          <span class="c2-nav-logo">SEEYA</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="c2-nav-pill">2 saves</span>
+            <button class="c2-nav-btn">Plan trip</button>
+          </div>
+        </div>
+        <div class="c2-tabs">
+          <button class="c2-tab">Inspiration</button>
+          <button class="c2-tab">Inspire Me</button>
+          <button class="c2-tab on">Itinerary</button>
+          <button class="c2-tab">Map</button>
+        </div>
+        <div class="c2-body">
+          <div class="c2-itin-header">
+            <div style="font-size:16px;font-weight:700;margin-bottom:3px;">Sweet Tokyo Girls Trip</div>
+            <div style="font-size:10px;opacity:.75;font-weight:500;">Tokyo, Japan · 3 days</div>
+          </div>
+          <span class="c2-day-badge">DAY 1 — DESSERT CRAWL</span>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;gap:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+                <div style="font-size:8px;font-weight:600;color:#ADADAD;letter-spacing:.04em;">AM</div>
+                <div class="c2-dot"></div>
+                <div class="c2-line"></div>
+              </div>
+              <div class="c2-stop-card" style="flex:1;">
+                <div style="font-size:11px;font-weight:600;color:#1A1A1A;margin-bottom:1px;">Flipper's Soufflé Pancakes</div>
+                <div style="font-size:9px;color:#ADADAD;margin-bottom:4px;">Restaurant · Omotesando</div>
+                <div style="font-size:10px;color:#6B6B6B;margin-bottom:5px;line-height:1.4;">Famous jiggly soufflé pancakes. Expect a queue.</div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <span class="c2-tag c2-tag-green">From saves</span>
+                  <span class="c2-tag" style="background:#E8F5F1;color:#1A6B57;">@tokyofoodie ↗</span>
+                  <span class="c2-tag">$$</span>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+                <div style="font-size:8px;font-weight:600;color:#ADADAD;letter-spacing:.04em;">PM</div>
+                <div class="c2-dot"></div>
+                <div class="c2-line"></div>
+              </div>
+              <div class="c2-stop-card" style="flex:1;">
+                <div style="font-size:11px;font-weight:600;color:#1A1A1A;margin-bottom:1px;">Shibuya Crossing</div>
+                <div style="font-size:9px;color:#ADADAD;margin-bottom:4px;">Attraction</div>
+                <div style="font-size:10px;color:#6B6B6B;margin-bottom:5px;line-height:1.4;">Iconic scramble crossing. Best visited at sunset.</div>
+                <div style="display:flex;gap:4px;">
+                  <span class="c2-tag" style="background:#F0F0F0;color:#ADADAD;">AI suggested</span>
+                  <span class="c2-tag">free</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ VERSION 3: CHIC ═══════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-badge" style="background:#FBF5E6;color:#C9A84C;">Version 3</span>
+    <div>
+      <div class="concept-title" style="font-family:'Playfair Display',serif;color:#1C2B3A;font-style:italic;">Chic</div>
+      <div class="concept-desc">Sophisticated and editorial — feels like a luxury travel magazine</div>
+    </div>
+  </div>
+  <div class="screens">
+
+    <!-- Chic Onboarding -->
+    <div class="screen-wrap">
+      <div class="screen-label">Onboarding</div>
+      <div class="phone" style="background:#FAF7F2;">
+        <div class="c3-ob">
+          <div class="c3-ob-progress">
+            <div class="c3-ob-dot on"></div>
+            <div class="c3-ob-dot"></div>
+            <div class="c3-ob-dot"></div>
+            <div class="c3-ob-dot"></div>
+          </div>
+          <div class="c3-ob-logo">SeeYa Travel</div>
+          <div class="c3-ob-step">Step 01 — The Basics</div>
+          <div class="c3-ob-title">Let's plan your <em>perfect</em> trip</div>
+          <div class="c3-ob-sub">Tell us where you're headed and we'll take care of the rest.</div>
+          <div class="c3-divider"></div>
+          <label class="c3-lbl">Your name</label>
+          <input class="c3-input" placeholder="Full name" />
+          <label class="c3-lbl">Destination</label>
+          <input class="c3-input" placeholder="Where are you going?" />
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;">
+            <input type="checkbox" style="accent-color:#C9A84C;" />
+            <span style="font-family:'Lato',sans-serif;font-size:11px;color:#8A7E6F;letter-spacing:.02em;">Not sure yet — inspire me</span>
+          </div>
+          <label class="c3-lbl">Trip length</label>
+          <div class="c3-pills">
+            <span class="c3-pill on">Weekend</span>
+            <span class="c3-pill">4–6 days</span>
+            <span class="c3-pill">1–2 weeks</span>
+            <span class="c3-pill">2+ weeks</span>
+          </div>
+          <button class="c3-btn" style="margin-top:auto;">Continue</button>
+          <div class="c3-skip" style="margin-top:10px;">Skip for now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chic Inspiration -->
+    <div class="screen-wrap">
+      <div class="screen-label">Inspiration</div>
+      <div class="phone" style="background:#FAF7F2;">
+        <div class="c3-nav">
+          <span class="c3-nav-logo">SeeYa Travel</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="c3-nav-pill">2 saves</span>
+            <button class="c3-nav-btn">Plan Trip</button>
+          </div>
+        </div>
+        <div class="c3-tabs">
+          <button class="c3-tab on">Inspiration</button>
+          <button class="c3-tab">Inspire Me</button>
+          <button class="c3-tab">Itinerary</button>
+          <button class="c3-tab">Map</button>
+        </div>
+        <div class="c3-body">
+          <div class="c3-input-card">
+            <div style="font-family:'Lato',sans-serif;font-size:9px;font-weight:700;color:#8A7E6F;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Save a link</div>
+            <div style="display:flex;gap:6px;">
+              <input style="flex:1;background:transparent;border:none;border-bottom:1px solid #D4C5B0;padding:8px 0;font-family:'Lato',sans-serif;font-size:12px;color:#8A7E6F;" placeholder="YouTube, TikTok, blog…" />
+              <button style="background:#1C2B3A;color:#FAF7F2;border:none;border-radius:2px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;">Save</button>
+            </div>
+          </div>
+          <div style="font-family:'Lato',sans-serif;font-size:9px;font-weight:700;color:#B0A090;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Saved Content</div>
+          <div class="c3-save-card">
+            <div class="c3-thumb">🍜</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Playfair Display',serif;font-size:11px;color:#1C2B3A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">7 Best Dessert Spots in Tokyo</div>
+              <div style="font-family:'Lato',sans-serif;font-size:9px;color:#8A7E6F;margin:2px 0;letter-spacing:.02em;">Tokyo, Japan</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;">
+                <span class="c3-tag c3-tag-gold">@tokyofoodie</span>
+                <span class="c3-tag">desserts</span>
+              </div>
+            </div>
+          </div>
+          <div class="c3-save-card">
+            <div class="c3-thumb">🏛️</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Playfair Display',serif;font-size:11px;color:#1C2B3A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Hidden Gems in Asakusa</div>
+              <div style="font-family:'Lato',sans-serif;font-size:9px;color:#8A7E6F;margin:2px 0;letter-spacing:.02em;">Tokyo, Japan</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;">
+                <span class="c3-tag">culture</span>
+                <span class="c3-tag">hidden gems</span>
+              </div>
+            </div>
+          </div>
+          <button style="width:100%;background:#1C2B3A;color:#FAF7F2;border:none;border-radius:2px;padding:12px;font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;margin-top:10px;">Build My Itinerary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chic Itinerary -->
+    <div class="screen-wrap">
+      <div class="screen-label">Itinerary</div>
+      <div class="phone" style="background:#FAF7F2;">
+        <div class="c3-nav">
+          <span class="c3-nav-logo">SeeYa Travel</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="c3-nav-pill">2 saves</span>
+            <button class="c3-nav-btn">Plan Trip</button>
+          </div>
+        </div>
+        <div class="c3-tabs">
+          <button class="c3-tab">Inspiration</button>
+          <button class="c3-tab">Inspire Me</button>
+          <button class="c3-tab on">Itinerary</button>
+          <button class="c3-tab">Map</button>
+        </div>
+        <div class="c3-body">
+          <div class="c3-itin-header">
+            <div style="font-family:'Lato',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#C9A84C;margin-bottom:4px;">Your Itinerary</div>
+            <div style="font-family:'Playfair Display',serif;font-size:17px;font-style:italic;margin-bottom:3px;">Sweet Tokyo Girls Trip</div>
+            <div style="font-family:'Lato',sans-serif;font-size:10px;opacity:.6;letter-spacing:.04em;">Tokyo, Japan · 3 days</div>
+          </div>
+          <span class="c3-day-badge">Day 01 — Dessert Crawl</span>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;gap:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;width:34px;flex-shrink:0;">
+                <div style="font-family:'Lato',sans-serif;font-size:8px;font-weight:700;color:#B0A090;letter-spacing:.06em;">AM</div>
+                <div class="c3-dot"></div>
+                <div class="c3-line"></div>
+              </div>
+              <div class="c3-stop-card" style="flex:1;">
+                <div style="font-family:'Playfair Display',serif;font-size:12px;color:#1C2B3A;margin-bottom:1px;">Flipper's Soufflé Pancakes</div>
+                <div style="font-family:'Lato',sans-serif;font-size:9px;color:#8A7E6F;margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase;">Restaurant · Omotesando</div>
+                <div style="font-family:'Lato',sans-serif;font-size:10px;color:#8A7E6F;margin-bottom:5px;line-height:1.5;font-style:italic;">Famous jiggly soufflé pancakes in Omotesando.</div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <span class="c3-tag c3-tag-gold">From saves</span>
+                  <span class="c3-tag c3-tag-gold">@tokyofoodie ↗</span>
+                  <span class="c3-tag">$$</span>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;width:34px;flex-shrink:0;">
+                <div style="font-family:'Lato',sans-serif;font-size:8px;font-weight:700;color:#B0A090;letter-spacing:.06em;">PM</div>
+                <div class="c3-dot"></div>
+                <div class="c3-line"></div>
+              </div>
+              <div class="c3-stop-card" style="flex:1;">
+                <div style="font-family:'Playfair Display',serif;font-size:12px;color:#1C2B3A;margin-bottom:1px;">Shibuya Crossing</div>
+                <div style="font-family:'Lato',sans-serif;font-size:9px;color:#8A7E6F;margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase;">Attraction</div>
+                <div style="font-family:'Lato',sans-serif;font-size:10px;color:#8A7E6F;margin-bottom:5px;line-height:1.5;font-style:italic;">The iconic scramble crossing. Best at sunset.</div>
+                <div style="display:flex;gap:4px;">
+                  <span class="c3-tag">AI Suggested</span>
+                  <span class="c3-tag">Free</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:20px 0 40px;font-family:'Lato',sans-serif;font-size:12px;color:#ADADAD;letter-spacing:.04em;">
+  SeeYa Travel — UI Concepts · Share with Gracie to decide
+</div>
+
+</body>
+</html>
