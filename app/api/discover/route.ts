@@ -28,10 +28,18 @@ export async function POST(req: NextRequest) {
       const channelHandle = '@' + channelName.replace(/\s+/g, '').toLowerCase()
 
       const prompt = [
-        `Extract travel locations from this YouTube video about ${destination}.`,
+        `Extract travel locations from this YouTube Short about ${destination}.`,
         '',
         'Title: ' + snippet.title,
-        'Description: ' + (snippet.description || '').slice(0, 4000),
+        'Description: ' + (snippet.description || '(no description — Short format)').slice(0, 4000),
+        '',
+        'Instructions:',
+        '- If specific places are named (restaurants, hotels, attractions), extract them exactly.',
+        '- If NO specific places are named but a city is mentioned or implied, suggest 4-6 real,',
+        '  well-known places that match the vibe of the title (e.g. "staycation" → boutique hotels,',
+        '  spas; "foodie" → notable restaurants; "nightlife" → bars and clubs).',
+        '- Always populate the locations array — never return it empty.',
+        '- Infer vibe_tags from the title and content style.',
         '',
         'Return ONLY valid JSON, no other text:',
         '{',
