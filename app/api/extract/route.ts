@@ -58,17 +58,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not read this link' }, { status: 422 })
   }
 
-  const sourceLabel = isTranscript ? 'Transcript (spoken words)' : 'Description'
+  const sourceLabel = isTranscript ? 'Transcript (spoken words from the creator)' : 'Description'
 
   const prompt = [
-    'You are a travel content analyst. Extract travel locations from this video/post.',
+    'You are a travel content analyst. Extract the specific places a creator recommends in this video.',
     '',
     'Title: ' + title,
     sourceLabel + ': ' + content.slice(0, 8000),
     '',
     'Instructions:',
-    '- If specific places are named (restaurants, hotels, attractions), extract them exactly as spoken/written.',
-    '- If NO specific places are named but a city/country is mentioned or implied, suggest 3-5 real, well-known places that match the vibe of the content.',
+    '- Extract every specifically named place: restaurants, bars, cafes, hotels, tours, experiences, and landmarks the creator explicitly mentions by name.',
+    '- PRIORITISE named restaurants, bars, and unique experiences over generic famous landmarks (e.g. "Tavern on the Green" and "Serendipity 3" are more valuable than "Central Park" or "Times Square").',
+    '- Only include a generic landmark (Central Park, Eiffel Tower, etc.) if the creator gives a specific reason to visit it or pairs it with a specific activity.',
+    '- Extract place names exactly as the creator says them — do not paraphrase or generalise.',
+    '- If truly no specific places are named, suggest 3-5 real places matching the city and vibe.',
     '- Always populate the locations array — never return it empty.',
     '- Infer vibe_tags from the tone and content style.',
     '',
