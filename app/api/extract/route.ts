@@ -1,8 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
-import { YoutubeTranscript } from 'youtube-transcript'
 
 const client = new Anthropic()
+
+const ANDROID_VERSION = '20.10.38'
+const ANDROID_UA = `com.google.android.youtube/${ANDROID_VERSION} (Linux; U; Android 14)`
 
 function detectPlatform(url: string) {
   if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube'
@@ -16,25 +18,65 @@ function extractVideoId(url: string) {
   return url.match(/(?:shorts\/|v=|youtu\.be\/)([^&?/]+)/)?.[1] ?? null
 }
 
+async function fetchTranscript(videoId: string): Promise<string> {
+  // Use InnerTube player API with Android client — not blocked by YouTube on server-side
+  const playerRes = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'User-Agent': ANDROID_UA },
+    body: JSON.stringify({
+      context: { client: { clientName: 'ANDROID', clientVersion: ANDROID_VERSION } },
+      videoId,
+    })
+  })
+  if (!playerRes.ok) return ''
+
+  const data = await playerRes.json()
+  const captionTracks: Array<{ baseUrl: string; languageCode: string; kind?: string }> =
+    data?.captions?.playerCaptionsTracklistRenderer?.captionTracks ?? []
+  if (captionTracks.length === 0) return ''
+
+  const track = captionTracks[0]
+  const xmlRes = await fetch(track.baseUrl, { headers: { 'User-Agent': ANDROID_UA } })
+  if (!xmlRes.ok) return ''
+  const xml = await xmlRes.text()
+
+  // Format 3: <p t="ms"><s>word</s>...</p> — used by Android InnerTube response
+  const pMatches = [...xml.matchAll(/<p\s[^>]*>([\s\S]*?)<\/p>/g)]
+  let texts: string
+  if (pMatches.length > 0) {
+    texts = pMatches.map(m => {
+      const inner = m[1]
+      const words = [...inner.matchAll(/<s[^>]*>([^<]*)<\/s>/g)].map(s => s[1])
+      return words.length > 0 ? words.join('') : inner.replace(/<[^>]+>/g, '')
+    }).join(' ')
+  } else {
+    // Classic format fallback: <text start="s" dur="s">content</text>
+    texts = [...xml.matchAll(/<text[^>]*>(.*?)<\/text>/gs)].map(m => m[1]).join(' ')
+  }
+
+  const decoded = texts
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+  return decoded.replace(/\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 async function getYouTubeData(url: string) {
   const videoId = extractVideoId(url)
   if (!videoId) return null
 
-  const [apiRes, transcript] = await Promise.allSettled([
+  const [apiRes, transcriptText] = await Promise.allSettled([
     fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${process.env.YOUTUBE_API_KEY}`)
       .then(r => r.json()),
-    YoutubeTranscript.fetchTranscript(videoId)
-      .then(lines => lines.map(l => l.text).join(' ').replace(/\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim())
-      .catch(() => '')
+    fetchTranscript(videoId)
   ])
 
   const snippet = apiRes.status === 'fulfilled' ? apiRes.value?.items?.[0]?.snippet : null
-  const transcriptText = transcript.status === 'fulfilled' ? transcript.value : ''
+  const text = transcriptText.status === 'fulfilled' ? transcriptText.value : ''
 
   return snippet ? {
     title: snippet.title as string,
-    content: transcriptText || snippet.description || '',
-    isTranscript: transcriptText.length > 0
+    content: text || snippet.description || '',
+    isTranscript: text.length > 0
   } : null
 }
 
