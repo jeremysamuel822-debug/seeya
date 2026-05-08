@@ -183,6 +183,7 @@ export default function SeeYa() {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
+          width: 100%;
           max-width: 620px;
           margin: 0 auto;
           background: var(--cream);
