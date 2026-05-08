@@ -7,11 +7,11 @@ export async function POST(req: NextRequest) {
   const { destination, vibe, tripType, budget } = await req.json()
   if (!destination) return NextResponse.json({ error: 'Destination required' }, { status: 400 })
 
-  // Keep destination prominent — it must be first and repeated so YouTube doesn't drift
-  const query = `"${destination}" travel ${[vibe, tripType].filter(Boolean).join(' ')}`.trim()
+  // Keep destination prominent; #Shorts tag + videoDuration=short targets YouTube Shorts
+  const query = `"${destination}" travel ${[vibe, tripType].filter(Boolean).join(' ')} #Shorts`.trim()
 
   const searchRes = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(query)}&type=video&maxResults=10&part=snippet&key=${process.env.YOUTUBE_API_KEY}`
+    `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(query)}&type=video&videoDuration=short&maxResults=10&part=snippet&key=${process.env.YOUTUBE_API_KEY}`
   )
   const searchData = await searchRes.json()
 
