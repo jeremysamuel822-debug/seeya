@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
+import { YoutubeTranscript } from 'youtube-transcript'
 
 const client = new Anthropic()
 
@@ -11,15 +12,30 @@ function detectPlatform(url: string) {
   return 'blog'
 }
 
+function extractVideoId(url: string) {
+  return url.match(/(?:shorts\/|v=|youtu\.be\/)([^&?/]+)/)?.[1] ?? null
+}
+
 async function getYouTubeData(url: string) {
-  const videoId = url.match(/(?:shorts\/|v=|youtu\.be\/)([^&?/]+)/)?.[1]
+  const videoId = extractVideoId(url)
   if (!videoId) return null
-  const res = await fetch(
-    `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${process.env.YOUTUBE_API_KEY}`
-  )
-  const data = await res.json()
-  const snippet = data.items?.[0]?.snippet
-  return snippet ? { title: snippet.title, description: snippet.description } : null
+
+  const [apiRes, transcript] = await Promise.allSettled([
+    fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${process.env.YOUTUBE_API_KEY}`)
+      .then(r => r.json()),
+    YoutubeTranscript.fetchTranscript(videoId)
+      .then(lines => lines.map(l => l.text).join(' '))
+      .catch(() => '')
+  ])
+
+  const snippet = apiRes.status === 'fulfilled' ? apiRes.value?.items?.[0]?.snippet : null
+  const transcriptText = transcript.status === 'fulfilled' ? transcript.value : ''
+
+  return snippet ? {
+    title: snippet.title as string,
+    content: transcriptText || snippet.description || '',
+    isTranscript: transcriptText.length > 0
+  } : null
 }
 
 export async function POST(req: NextRequest) {
@@ -29,25 +45,29 @@ export async function POST(req: NextRequest) {
   const platform = detectPlatform(url)
   let title = ''
   let content = ''
+  let isTranscript = false
 
   if (platform === 'youtube') {
     const data = await getYouTubeData(url)
-    title = data?.title || ''
-    content = data?.description || ''
+    title = data?.title ?? ''
+    content = data?.content ?? ''
+    isTranscript = data?.isTranscript ?? false
   }
 
   if (!content && !title) {
     return NextResponse.json({ error: 'Could not read this link' }, { status: 422 })
   }
 
+  const sourceLabel = isTranscript ? 'Transcript (spoken words)' : 'Description'
+
   const prompt = [
     'You are a travel content analyst. Extract travel locations from this video/post.',
     '',
     'Title: ' + title,
-    'Content: ' + content.slice(0, 6000),
+    sourceLabel + ': ' + content.slice(0, 8000),
     '',
     'Instructions:',
-    '- If specific places are named (restaurants, hotels, attractions), extract them exactly.',
+    '- If specific places are named (restaurants, hotels, attractions), extract them exactly as spoken/written.',
     '- If NO specific places are named but a city/country is mentioned or implied, suggest 3-5 real, well-known places that match the vibe of the content.',
     '- Always populate the locations array — never return it empty.',
     '- Infer vibe_tags from the tone and content style.',
