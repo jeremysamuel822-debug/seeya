@@ -43,7 +43,9 @@ async function getYouTubeData(url: string) {
   ])
 
   const snippet = apiRes.status === 'fulfilled' ? apiRes.value?.items?.[0]?.snippet : null
-  const text = transcriptText.status === 'fulfilled' ? transcriptText.value : ''
+  const rawText = transcriptText.status === 'fulfilled' ? transcriptText.value : ''
+  // Discard transcripts that are just music/noise (under 100 chars after cleaning)
+  const text = rawText.length >= 100 ? rawText : ''
 
   return snippet ? {
     title: snippet.title as string,
