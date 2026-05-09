@@ -437,12 +437,31 @@ export default function SeeYa() {
 
         /* ── LOADING ── */
         .loading-wrap { text-align: center; padding: 48px 20px; }
-        .paper-plane { display: block; margin: 0 auto 16px; animation: float 2.4s ease-in-out infinite; }
-        @keyframes float {
-          0%   { transform: translateY(0)   rotate(-8deg); }
-          40%  { transform: translateY(-14px) rotate(2deg); }
-          60%  { transform: translateY(-16px) rotate(-2deg); }
-          100% { transform: translateY(0)   rotate(-8deg); }
+        .bounce-pin { display: block; margin: 0 auto 8px; }
+        .bounce-pin .pin { animation: pin-bounce 1.2s cubic-bezier(0.36,0.07,0.19,0.97) infinite; transform-origin: 40px 98px; }
+        .bounce-pin .shadow { animation: pin-shadow 1.2s cubic-bezier(0.36,0.07,0.19,0.97) infinite; transform-origin: 40px 106px; }
+        .bounce-pin .ripple { animation: pin-ripple 1.2s ease-out infinite; transform-origin: 40px 104px; }
+        @keyframes pin-bounce {
+          0%   { transform: translateY(0)     scaleX(1)    scaleY(1); }
+          30%  { transform: translateY(-28px)  scaleX(1)    scaleY(1); }
+          50%  { transform: translateY(0)     scaleX(1.18) scaleY(0.82); }
+          65%  { transform: translateY(-10px)  scaleX(1)    scaleY(1); }
+          80%  { transform: translateY(0)     scaleX(1.08) scaleY(0.94); }
+          100% { transform: translateY(0)     scaleX(1)    scaleY(1); }
+        }
+        @keyframes pin-shadow {
+          0%   { transform: scaleX(1);   opacity: 0.3; }
+          30%  { transform: scaleX(0.4); opacity: 0.1; }
+          50%  { transform: scaleX(1.2); opacity: 0.35; }
+          65%  { transform: scaleX(0.7); opacity: 0.2; }
+          80%  { transform: scaleX(1.1); opacity: 0.3; }
+          100% { transform: scaleX(1);   opacity: 0.3; }
+        }
+        @keyframes pin-ripple {
+          0%, 40%  { transform: scaleX(0);   opacity: 0; }
+          52%      { transform: scaleX(1.4); opacity: 0.5; }
+          70%      { transform: scaleX(2.2); opacity: 0; }
+          100%     { transform: scaleX(0);   opacity: 0; }
         }
         .loading-title { font-family: var(--font-serif); font-size: 18px; font-style: italic; color: var(--text); margin-bottom: 5px; }
         .loading-sub { font-size: 11px; font-weight: 300; color: var(--mid); }
@@ -724,9 +743,15 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
 
   if (building) return (
     <div className="loading-wrap">
-      <svg className="paper-plane" width="48" height="48" viewBox="0 0 24 24" fill="none">
-        <path d="M22 2L11 13" stroke="#a98fd4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#a98fd4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#ede5f8"/>
+      <svg className="bounce-pin" width="80" height="130" viewBox="0 0 80 130" fill="none">
+        <line x1="8" y1="104" x2="72" y2="104" stroke="#e2d9f3" strokeWidth="2" strokeLinecap="round"/>
+        <ellipse className="ripple" cx="40" cy="104" rx="14" ry="3" fill="#a98fd4" opacity="0"/>
+        <ellipse className="shadow" cx="40" cy="106" rx="10" ry="3" fill="#a98fd4"/>
+        <g className="pin">
+          <circle cx="40" cy="68" r="14" fill="#a98fd4"/>
+          <path d="M40 82 L40 98" stroke="#a98fd4" strokeWidth="3.5" strokeLinecap="round"/>
+          <circle cx="40" cy="68" r="5" fill="white"/>
+        </g>
       </svg>
       <div className="loading-title">Building your itinerary…</div>
       <div className="loading-sub">Pulling together {totalPlaces} places from {doneSaves} video{doneSaves > 1 ? 's' : ''}</div>
@@ -783,7 +808,7 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
             return (
               <div key={j} className="stop-row">
                 <div className="stop-left">
-                  <span className={`stop-time${tc ? ' ' + tc : ''}`}>{slot.time}</span>
+                  <span className={`stop-time${tc ? ' ' + tc : ''}`}>{slot.time.toLowerCase() === 'afternoon' ? 'Noon' : slot.time}</span>
                   <div className={`stop-dot${tc ? ' ' + tc : ''}`} />
                   {j < day.slots.length - 1 && <div className="stop-line" />}
                 </div>
@@ -849,9 +874,15 @@ function DiscoverPanel({ form, setForm, run, discovering, results, error, addedI
 
       {discovering && (
         <div className="loading-wrap">
-          <svg className="paper-plane" width="40" height="40" viewBox="0 0 24 24" fill="none">
-            <path d="M22 2L11 13" stroke="#a98fd4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#a98fd4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#ede5f8"/>
+          <svg className="bounce-pin" width="80" height="130" viewBox="0 0 80 130" fill="none">
+            <line x1="8" y1="104" x2="72" y2="104" stroke="#e2d9f3" strokeWidth="2" strokeLinecap="round"/>
+            <ellipse className="ripple" cx="40" cy="104" rx="14" ry="3" fill="#a98fd4" opacity="0"/>
+            <ellipse className="shadow" cx="40" cy="106" rx="10" ry="3" fill="#a98fd4"/>
+            <g className="pin">
+              <circle cx="40" cy="68" r="14" fill="#a98fd4"/>
+              <path d="M40 82 L40 98" stroke="#a98fd4" strokeWidth="3.5" strokeLinecap="round"/>
+              <circle cx="40" cy="68" r="5" fill="white"/>
+            </g>
           </svg>
           <div className="loading-title">Searching for creators…</div>
           <div className="loading-sub">Finding the best {form.destination} content</div>
