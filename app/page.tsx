@@ -747,6 +747,16 @@ function openTableUrl(name: string, city: string) {
   return `https://www.opentable.com/s?term=${q}&covers=2${id ? `&ref=${id}` : ''}`
 }
 
+// Resy operates in the US only
+const RESY_COUNTRIES = new Set(['United States', 'USA', 'US'])
+
+// OpenTable operates in US + select international markets
+const OPENTABLE_COUNTRIES = new Set([
+  'United States', 'USA', 'US',
+  'Canada', 'United Kingdom', 'Australia', 'Germany',
+  'Japan', 'Mexico', 'Ireland', 'Netherlands',
+])
+
 function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalPlaces }: {
   building: boolean; itinerary: Itinerary | null; saves: Save[]
   creatorLinks: Record<string, string>; doneSaves: number; totalPlaces: number
@@ -851,10 +861,12 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                     {slot.type === 'hotel' && (
                       <a href={bookingComUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book hotel →</a>
                     )}
-                    {slot.type === 'restaurant' && (<>
+                    {slot.type === 'restaurant' && RESY_COUNTRIES.has(itinerary.country) && (
                       <a href={resyUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Resy →</a>
+                    )}
+                    {slot.type === 'restaurant' && OPENTABLE_COUNTRIES.has(itinerary.country) && (
                       <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-opentable">OpenTable →</a>
-                    </>)}
+                    )}
                     {(slot.type === 'experience' || slot.type === 'attraction') && (
                       <a href={viatorUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-viator">Book on Viator →</a>
                     )}
