@@ -866,10 +866,10 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                     {slot.type === 'hotel' && (
                       <a href={bookingComUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book hotel →</a>
                     )}
-                    {slot.type === 'restaurant' && RESY_COUNTRIES.has(itinerary.country) && (
+                    {slot.type === 'restaurant' && RESY_COUNTRIES.has(itinerary.country) && (slot.estimated_cost === '$$' || slot.estimated_cost === '$$$') && (
                       <a href={resyUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Resy →</a>
                     )}
-                    {slot.type === 'restaurant' && OPENTABLE_COUNTRIES.has(itinerary.country) && (
+                    {slot.type === 'restaurant' && OPENTABLE_COUNTRIES.has(itinerary.country) && (slot.estimated_cost === '$$' || slot.estimated_cost === '$$$') && (
                       <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-opentable">OpenTable →</a>
                     )}
                     {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
