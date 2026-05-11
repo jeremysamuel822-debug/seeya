@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     '- HOTEL RULE: Every itinerary must include exactly one hotel as a "Check in" slot on Day 1 Morning. If a hotel appears in the known locations list, use that one (from_saved: true). If not, suggest a real hotel near the main activity areas for the trip (from_saved: false). The hotel should be well-located relative to the day\'s other stops — same neighborhood or district where possible.',
     '- IMPORTANT: set "from_saved" to true ONLY for places that appear exactly in the known locations list above. Set it to false for every place you add yourself.',
     '- IMPORTANT: if a location has a [creator says: X] tag, you MUST schedule it at that time of day (e.g. "lunch" → midday slot, "dinner" → evening slot). Never move it.',
-    '- RESERVATION URL RULE: For restaurant slots only, set "reservation_url" to the direct booking URL if you know this specific restaurant accepts online reservations (e.g. via OpenTable, Resy, or their own site). If the restaurant is a casual spot, street food stall, market, or you are not certain it takes online reservations, set "reservation_url" to null.',
+    '- RESERVATION URL RULE: For restaurant slots only, set "reservation_url" to the direct reservations page URL (e.g. their OpenTable listing, Resy listing, or the /reservations page on their own site) if you know it with confidence. If the restaurant is casual, a market stall, or you only know their homepage but not their specific booking page, set "reservation_url" to null. Never return a homepage — only a page where the user can actually complete a reservation.',
     '',
     'Return ONLY valid JSON, no other text:',
     '{',
