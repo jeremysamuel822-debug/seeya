@@ -423,6 +423,18 @@ export default function SeeYa() {
         .price.mid { color: #a07820; }
         .price.lux { color: var(--blush); }
 
+        /* ── BOOK BUTTONS ── */
+        .btn-book {
+          font-size: 9px; font-weight: 600; letter-spacing: .5px;
+          padding: 3px 9px; border-radius: 100px; text-decoration: none;
+          transition: opacity .12s; white-space: nowrap; display: inline-block;
+        }
+        .btn-book:hover { opacity: .75; }
+        .btn-book-hotel     { background: var(--sky-pale);   color: var(--sky); }
+        .btn-book-resy      { background: var(--blush-pale); color: var(--blush); }
+        .btn-book-opentable { background: var(--teal-pale);  color: var(--teal-dark); }
+        .btn-book-viator    { background: var(--gold-pale);  color: #a07820; }
+
         /* ── INSPIRED BY ── */
         .inspired-card {
           background: var(--cream); border: 1.5px solid var(--lav-pale);
@@ -723,6 +735,28 @@ function downloadItinerary(itinerary: Itinerary, saves: Save[]) {
   URL.revokeObjectURL(a.href)
 }
 
+function bookingComUrl(name: string, city: string) {
+  const q = encodeURIComponent(`${name} ${city}`)
+  const id = process.env.NEXT_PUBLIC_BOOKING_AFFILIATE_ID
+  return `https://www.booking.com/searchresults.html?ss=${q}${id ? `&aid=${id}` : ''}`
+}
+
+function viatorUrl(name: string, city: string) {
+  const q = encodeURIComponent(`${name} ${city}`)
+  const id = process.env.NEXT_PUBLIC_VIATOR_AFFILIATE_ID
+  return `https://www.viator.com/search?q=${q}${id ? `&mcid=${id}` : ''}`
+}
+
+function resyUrl(name: string, city: string) {
+  return `https://resy.com/search?query=${encodeURIComponent(name)}&location=${encodeURIComponent(city)}`
+}
+
+function openTableUrl(name: string, city: string) {
+  const q = encodeURIComponent(`${name} ${city}`)
+  const id = process.env.NEXT_PUBLIC_OPENTABLE_AFFILIATE_ID
+  return `https://www.opentable.com/s?term=${q}&covers=2${id ? `&ref=${id}` : ''}`
+}
+
 function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalPlaces }: {
   building: boolean; itinerary: Itinerary | null; saves: Save[]
   creatorLinks: Record<string, string>; doneSaves: number; totalPlaces: number
@@ -824,6 +858,16 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                         : <span className="badge blush">🎥 {slot.creator}</span>
                     )}
                     <span className={`price ${priceClass(slot.estimated_cost)}`}>{slot.estimated_cost}</span>
+                    {slot.type === 'hotel' && (
+                      <a href={bookingComUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book hotel →</a>
+                    )}
+                    {slot.type === 'restaurant' && (<>
+                      <a href={resyUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Resy →</a>
+                      <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-opentable">OpenTable →</a>
+                    </>)}
+                    {(slot.type === 'experience' || slot.type === 'attraction') && (
+                      <a href={viatorUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-viator">Book on Viator →</a>
+                    )}
                   </div>
                 </div>
               </div>
