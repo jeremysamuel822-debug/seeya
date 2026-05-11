@@ -731,8 +731,13 @@ function bookingComUrl(name: string, city: string) {
   return `https://www.booking.com/searchresults.html?ss=${q}${id ? `&aid=${id}` : ''}`
 }
 
-function viatorUrl(name: string, city: string) {
-  const q = encodeURIComponent(`${name} ${city}`)
+function viatorUrl(name: string, city: string, type: string) {
+  // Experiences: search by activity keyword + city ("Seville Flamenco") — venue names are too specific for Viator
+  // Attractions: search by full name + city ("Alcazar Palace Seville") — major sites appear directly
+  const query = type === 'experience'
+    ? `${city} ${name.split(' ')[0]}`
+    : `${name} ${city}`
+  const q = encodeURIComponent(query)
   const id = process.env.NEXT_PUBLIC_VIATOR_AFFILIATE_ID
   return `https://www.viator.com/search?q=${q}${id ? `&mcid=${id}` : ''}`
 }
@@ -868,7 +873,7 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                       <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-opentable">OpenTable →</a>
                     )}
                     {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
-                      <a href={viatorUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-viator">Book on Viator →</a>
+                      <a href={viatorUrl(slot.name, itinerary.city, slot.type)} target="_blank" rel="noreferrer" className="btn-book btn-book-viator">Book on Viator →</a>
                     )}
                   </div>
                 </div>
