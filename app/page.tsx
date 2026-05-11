@@ -16,7 +16,7 @@ type DiscoverResult = { videoId: string; videoUrl: string; title: string; channe
 const BLANK_TRIP: TripDetails = { destination: '', tripLength: '', travelers: '', budget: '', vibe: '' }
 
 export default function SeeYa() {
-  const [mobileTab, setMobileTab] = useState<'saves' | 'discover' | 'itin'>('saves')
+  const [mobileTab, setMobileTab] = useState<'saves' | 'itin'>('saves')
   const [url, setUrl] = useState('')
   const [saves, setSaves] = useState<Save[]>([])
   const [trip, setTrip] = useState<TripDetails>(BLANK_TRIP)
@@ -528,9 +528,9 @@ export default function SeeYa() {
         </div>
 
         <div className="nav-tabs">
-          {(['saves', 'discover', 'itin'] as const).map(t => (
+          {(['saves', 'itin'] as const).map(t => (
             <button key={t} className={`nav-tab${mobileTab === t ? ' on' : ''}`} onClick={() => setMobileTab(t)}>
-              {t === 'saves' ? 'Inspiration' : t === 'discover' ? 'Inspire Me' : 'Itinerary'}
+              {t === 'saves' ? 'Inspiration' : 'Itinerary'}
             </button>
           ))}
         </div>
@@ -547,16 +547,6 @@ export default function SeeYa() {
           </div>
         )}
 
-        {mobileTab === 'discover' && (
-          <div className="tab-body">
-            <DiscoverPanel
-              form={discoverForm} setForm={setDiscoverForm}
-              run={runDiscover} discovering={discovering}
-              results={discoverResults} error={discoverError}
-              addedIds={addedIds} addCreator={addCreatorToPlan}
-            />
-          </div>
-        )}
 
         {mobileTab === 'itin' && (
           <div className="tab-body">
