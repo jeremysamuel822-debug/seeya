@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     '- Respect the budget level for any AI-added places.',
     `- Tailor AI additions to a ${travelers || 'general'} trip — e.g. girls trips get aesthetic cafes, honeymoons get romantic dinners, families get kid-friendly spots.`,
     '- Each day should flow naturally: morning activity, lunch, afternoon activity, dinner.',
+    '- HOTEL RULE: Every itinerary must include exactly one hotel as a "Check in" slot on Day 1 Morning. If a hotel appears in the known locations list, use that one (from_saved: true). If not, suggest a real hotel near the main activity areas for the trip (from_saved: false). The hotel should be well-located relative to the day\'s other stops — same neighborhood or district where possible.',
     '- IMPORTANT: set "from_saved" to true ONLY for places that appear exactly in the known locations list above. Set it to false for every place you add yourself.',
     '- IMPORTANT: if a location has a [creator says: X] tag, you MUST schedule it at that time of day (e.g. "lunch" → midday slot, "dinner" → evening slot). Never move it.',
     '',
