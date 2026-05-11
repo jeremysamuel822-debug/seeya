@@ -867,7 +867,7 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                     {slot.type === 'restaurant' && OPENTABLE_COUNTRIES.has(itinerary.country) && (
                       <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-opentable">OpenTable →</a>
                     )}
-                    {(slot.type === 'experience' || slot.type === 'attraction') && (
+                    {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
                       <a href={viatorUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-viator">Book on Viator →</a>
                     )}
                   </div>
