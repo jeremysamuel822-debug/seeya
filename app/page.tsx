@@ -130,7 +130,13 @@ export default function SeeYa() {
     if (!trip.destination && r.destination_city) persistTrip({ ...trip, destination: r.destination_city })
   }
 
-  function removeSave(i: number) { persistSaves(saves.filter((_, idx) => idx !== i)) }
+  function removeSave(i: number) {
+    const removed = saves[i]
+    persistSaves(saves.filter((_, idx) => idx !== i))
+    if (removed?.destination_city && trip.destination.toLowerCase() === removed.destination_city.toLowerCase()) {
+      persistTrip({ ...trip, destination: '' })
+    }
+  }
 
   const doneSaves = saves.filter(s => s.status === 'done').length
   const totalPlaces = saves.filter(s => s.status === 'done').flatMap(s => s.locations).length
