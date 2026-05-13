@@ -848,7 +848,25 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
 
   if (!itinerary) return (
     <div className="empty">
-      <div className="empty-icon">🗺️</div>
+      <div className="empty-icon">
+        <svg width="52" height="64" viewBox="0 0 52 64" fill="none">
+          {/* passport cover */}
+          <rect x="4" y="2" width="44" height="58" rx="5" fill="#a98fd4"/>
+          {/* spine */}
+          <rect x="4" y="2" width="7" height="58" rx="4" fill="#8b72b8"/>
+          {/* globe */}
+          <circle cx="28" cy="26" r="11" fill="none" stroke="white" strokeWidth="1.5" opacity="0.85"/>
+          <ellipse cx="28" cy="26" rx="5" ry="11" fill="none" stroke="white" strokeWidth="1.5" opacity="0.85"/>
+          <line x1="17" y1="26" x2="39" y2="26" stroke="white" strokeWidth="1.5" opacity="0.85"/>
+          <line x1="19" y1="18" x2="37" y2="18" stroke="white" strokeWidth="1" opacity="0.5"/>
+          <line x1="19" y1="34" x2="37" y2="34" stroke="white" strokeWidth="1" opacity="0.5"/>
+          {/* text lines */}
+          <rect x="15" y="45" width="26" height="2.5" rx="1.25" fill="white" opacity="0.55"/>
+          <rect x="19" y="50" width="18" height="2" rx="1" fill="white" opacity="0.35"/>
+          {/* pages peek */}
+          <rect x="46" y="6" width="4" height="50" rx="2" fill="#e2d9f3" opacity="0.7"/>
+        </svg>
+      </div>
       {buildError
         ? <><div className="empty-title">Something went wrong</div><div className="empty-sub">We couldn't build your itinerary. Go back and try again — if it keeps happening, try fewer videos.</div></>
         : <><div className="empty-title">Your itinerary will appear here</div><div className="empty-sub">Save some Shorts, fill in your trip details, then tap "Plan my trip" to see your day-by-day plan.</div></>
