@@ -22,6 +22,7 @@ export default function SeeYa() {
   const [trip, setTrip] = useState<TripDetails>(BLANK_TRIP)
   const [itinerary, setItinerary] = useState<Itinerary | null>(null)
   const [building, setBuilding] = useState(false)
+  const [buildError, setBuildError] = useState(false)
   const [tripOpen, setTripOpen] = useState(false)
   const [discoverForm, setDiscoverForm] = useState({ destination: '', vibe: '', tripType: '' })
   const [discoverResults, setDiscoverResults] = useState<DiscoverResult[]>([])
@@ -87,6 +88,7 @@ export default function SeeYa() {
     const done = saves.filter(s => s.status === 'done')
     if (done.length === 0) return
     setBuilding(true)
+    setBuildError(false)
     setMobileTab('itin')
 
     const allLocations = done.flatMap(s => s.locations.map(l => ({ ...l, creator: s.creator || l.creator })))
@@ -103,8 +105,10 @@ export default function SeeYa() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ locations: allLocations, city, country, vibe_tags, days: tripDays, travelers: trip.travelers, budget: trip.budget, vibe: trip.vibe })
       })
-      setItinerary(await res.json())
-    } catch {}
+      const data = await res.json()
+      if (!res.ok || data.error) throw new Error(data.error)
+      setItinerary(data)
+    } catch { setBuildError(true) }
     setBuilding(false)
   }
 
@@ -561,7 +565,7 @@ export default function SeeYa() {
 
         {mobileTab === 'itin' && (
           <div className="tab-body">
-            <ItinPanel building={building} itinerary={itinerary} saves={saves} creatorLinks={creatorLinks} doneSaves={doneSaves} totalPlaces={totalPlaces} />
+            <ItinPanel building={building} buildError={buildError} itinerary={itinerary} saves={saves} creatorLinks={creatorLinks} doneSaves={doneSaves} totalPlaces={totalPlaces} />
           </div>
         )}
       </div>
@@ -777,8 +781,8 @@ const OPENTABLE_COUNTRIES = new Set([
   'Japan', 'Mexico', 'Ireland', 'Netherlands',
 ])
 
-function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalPlaces }: {
-  building: boolean; itinerary: Itinerary | null; saves: Save[]
+function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneSaves, totalPlaces }: {
+  building: boolean; buildError: boolean; itinerary: Itinerary | null; saves: Save[]
   creatorLinks: Record<string, string>; doneSaves: number; totalPlaces: number
 }) {
   const timeClass = (time: string) => {
@@ -815,8 +819,10 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
   if (!itinerary) return (
     <div className="empty">
       <div className="empty-icon">🗺️</div>
-      <div className="empty-title">Your itinerary will appear here</div>
-      <div className="empty-sub">Save some Shorts, fill in your trip details, then tap "Plan my trip" to see your day-by-day plan.</div>
+      {buildError
+        ? <><div className="empty-title">Something went wrong</div><div className="empty-sub">We couldn't build your itinerary. Go back and try again — if it keeps happening, try fewer videos.</div></>
+        : <><div className="empty-title">Your itinerary will appear here</div><div className="empty-sub">Save some Shorts, fill in your trip details, then tap "Plan my trip" to see your day-by-day plan.</div></>
+      }
     </div>
   )
 
