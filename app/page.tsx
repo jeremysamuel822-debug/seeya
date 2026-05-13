@@ -656,11 +656,11 @@ function SavesPanel({ url, setUrl, addSave, trip, tripOpen, setTripOpen, persist
         <div className="empty">
           <div className="empty-icon">
             <svg width="36" height="44" viewBox="0 0 36 44" fill="none"><rect x="3" y="10" width="30" height="26" rx="4" fill="#ede5f8" stroke="#a98fd4" strokeWidth="2"/><rect x="12" y="3" width="12" height="9" rx="2.5" fill="none" stroke="#a98fd4" strokeWidth="2"/><line x1="18" y1="10" x2="18" y2="36" stroke="#a98fd4" strokeWidth="1.5" strokeDasharray="2.5 2.5"/><line x1="3" y1="22" x2="33" y2="22" stroke="#a98fd4" strokeWidth="1.5"/><circle cx="9" cy="39" r="3" fill="#a98fd4"/><circle cx="27" cy="39" r="3" fill="#a98fd4"/></svg>
-            <svg width="40" height="44" viewBox="0 0 40 34" fill="none"><rect x="3" y="8" width="34" height="20" rx="10" fill="#faeae9" stroke="#e8837e" strokeWidth="2"/><path d="M13 8 C13 3 27 3 27 8" fill="none" stroke="#e8837e" strokeWidth="2.5" strokeLinecap="round"/><line x1="3" y1="18" x2="37" y2="18" stroke="#e8837e" strokeWidth="1.5"/><circle cx="20" cy="18" r="2.5" fill="#e8837e"/></svg>
+            <svg width="36" height="44" viewBox="0 0 36 44" fill="none"><path d="M14 9 C14 6 22 6 22 9" stroke="#e8837e" strokeWidth="2" strokeLinecap="round" fill="none"/><rect x="5" y="9" width="26" height="30" rx="6" fill="#faeae9" stroke="#e8837e" strokeWidth="2"/><rect x="10" y="24" width="16" height="11" rx="3.5" fill="none" stroke="#e8837e" strokeWidth="1.5"/><circle cx="18" cy="24" r="1.8" fill="#e8837e"/></svg>
             <svg width="36" height="44" viewBox="0 0 36 44" fill="none"><path d="M5 16 L3 38 Q3 41 6 41 L30 41 Q33 41 33 38 L31 16 Z" fill="#fdf2ce" stroke="#e8b83a" strokeWidth="2"/><path d="M12 16 C12 8 24 8 24 16" fill="none" stroke="#e8b83a" strokeWidth="2.5" strokeLinecap="round"/><line x1="18" y1="22" x2="18" y2="35" stroke="#e8b83a" strokeWidth="1.5" strokeDasharray="2.5 2.5"/></svg>
           </div>
           <div className="empty-title">Time to pack your bags</div>
-          <div className="empty-sub">Paste a Short above — we'll find all the places and start packing your bags.</div>
+          <div className="empty-sub">Paste a Short above — we'll find all the places and make your itinerary for you.</div>
         </div>
       ) : (
         <>
