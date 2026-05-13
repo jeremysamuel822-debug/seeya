@@ -98,6 +98,8 @@ export async function POST(req: NextRequest) {
       morning: 'Morning', lunch: 'Lunch', afternoon: 'Afternoon',
       dinner: 'Dinner', evening: 'Evening'
     }
+    const TIME_ORDER = ['Morning', 'Lunch', 'Noon', 'Afternoon', 'Dinner', 'Evening']
+
     for (const day of itinerary.days ?? []) {
       for (const slot of day.slots ?? []) {
         const key = slot.name?.toLowerCase()
@@ -105,6 +107,25 @@ export async function POST(req: NextRequest) {
         if (key && requiredTimes[key]) {
           slot.time = timeLabel[requiredTimes[key]] ?? slot.time
         }
+      }
+
+      // Sort slots by canonical time order
+      day.slots.sort((a: any, b: any) => {
+        const ai = TIME_ORDER.indexOf(a.time)
+        const bi = TIME_ORDER.indexOf(b.time)
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+      })
+
+      // Deduplicate: bump second slot with same time to next available slot
+      const usedTimes = new Set<string>()
+      for (const slot of day.slots ?? []) {
+        if (usedTimes.has(slot.time)) {
+          const idx = TIME_ORDER.indexOf(slot.time)
+          for (let i = idx + 1; i < TIME_ORDER.length; i++) {
+            if (!usedTimes.has(TIME_ORDER[i])) { slot.time = TIME_ORDER[i]; break }
+          }
+        }
+        usedTimes.add(slot.time)
       }
     }
 
