@@ -141,6 +141,8 @@ export default function SeeYa() {
   const doneSaves = saves.filter(s => s.status === 'done').length
   const totalPlaces = saves.filter(s => s.status === 'done').flatMap(s => s.locations).length
 
+  useEffect(() => { if (doneSaves === 1) setTripOpen(true) }, [doneSaves])
+
   const tripSummaryTags = [
     trip.destination && `📍 ${trip.destination}`,
     trip.tripLength,
@@ -590,8 +592,8 @@ function SavesPanel({ url, setUrl, addSave, trip, tripOpen, setTripOpen, persist
         </div>
       </div>
 
-      {/* Trip details */}
-      <div className="trip-card">
+      {/* Trip details — only shown once at least one Short is saved */}
+      {doneSaves > 0 && <div className="trip-card">
         <div className="trip-header" onClick={() => setTripOpen(o => !o)}>
           <div className="trip-header-left">
             <span style={{ fontSize: 14 }}>✈</span>
@@ -640,7 +642,7 @@ function SavesPanel({ url, setUrl, addSave, trip, tripOpen, setTripOpen, persist
             <input className="field-input" placeholder="dreamy, adventurous, low-key luxe…" value={trip.vibe} onChange={e => persistTrip({ ...trip, vibe: e.target.value })} />
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Plan trip CTA */}
       {doneSaves > 0 && (
