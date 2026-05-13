@@ -8,7 +8,7 @@ const BUDGET_OPTIONS = ['Budget', 'Mid-range', 'Luxury']
 type TripDetails = { destination: string; tripLength: string; travelers: string; budget: string; vibe: string }
 type Location = { name: string; type: string; city: string; notes: string; estimated_cost: string; creator?: string }
 type Save = { url: string; platform: string; title: string; destination_city: string; destination_country: string; vibe_tags: string[]; locations: Location[]; status: 'loading' | 'done' | 'error'; creator?: string }
-type ItinerarySlot = { time: string; name: string; type: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string; reservation_url?: string | null }
+type ItinerarySlot = { time: string; name: string; type: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string; reservation_url?: 'resy' | 'opentable' | null }
 type ItineraryDay = { day: number; theme: string; slots: ItinerarySlot[] }
 type Itinerary = { title: string; city: string; country: string; days: ItineraryDay[] }
 type DiscoverResult = { videoId: string; videoUrl: string; title: string; channelName: string; channelHandle: string; thumbnail: string; destination_city: string; destination_country: string; vibe_tags: string[]; locations: Location[] }
@@ -881,8 +881,11 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
                     {slot.type === 'hotel' && (
                       <a href={bookingComUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book hotel →</a>
                     )}
-                    {slot.type === 'restaurant' && slot.reservation_url && (
-                      <a href={slot.reservation_url} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Reserve →</a>
+                    {slot.type === 'restaurant' && slot.reservation_url === 'resy' && (
+                      <a href={resyUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Reserve →</a>
+                    )}
+                    {slot.type === 'restaurant' && slot.reservation_url === 'opentable' && (
+                      <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Reserve →</a>
                     )}
                     {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
                       <a href={gygUrl(slot.name, itinerary.city, slot.type)} target="_blank" rel="noreferrer" className="btn-book btn-book-gyg">GetYourGuide →</a>
