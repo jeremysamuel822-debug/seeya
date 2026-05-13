@@ -761,8 +761,38 @@ function gygUrl(name: string, city: string, type: string) {
   return `https://www.getyourguide.com/s/?q=${q}${id ? `&partner_id=${id}` : ''}`
 }
 
+const RESY_CITY_SLUGS: Record<string, string> = {
+  'new york': 'ny', 'new york city': 'ny', 'nyc': 'ny',
+  'los angeles': 'la', 'la': 'la',
+  'chicago': 'chi',
+  'san francisco': 'sf',
+  'washington': 'dc', 'washington dc': 'dc', 'washington d.c.': 'dc',
+  'miami': 'mia',
+  'boston': 'bos',
+  'philadelphia': 'phi',
+  'nashville': 'nas',
+  'austin': 'aus',
+  'dallas': 'dal',
+  'houston': 'hou',
+  'atlanta': 'atl',
+  'seattle': 'sea',
+  'denver': 'den',
+  'las vegas': 'lv',
+  'new orleans': 'nor',
+  'portland': 'pdx',
+  'minneapolis': 'min',
+  'phoenix': 'pho',
+  'charlotte': 'clt',
+  'scottsdale': 'sco',
+  'london': 'lon',
+  'toronto': 'tor',
+  'vancouver': 'van',
+}
+
 function resyUrl(name: string, city: string) {
-  return `https://resy.com/search?query=${encodeURIComponent(name)}&location=${encodeURIComponent(city)}`
+  const slug = RESY_CITY_SLUGS[city.toLowerCase()]
+  if (slug) return `https://resy.com/cities/${slug}?query=${encodeURIComponent(name)}`
+  return `https://resy.com/?query=${encodeURIComponent(`${name} ${city}`)}`
 }
 
 function openTableUrl(name: string, city: string) {
