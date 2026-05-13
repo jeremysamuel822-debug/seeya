@@ -408,6 +408,8 @@ export default function SeeYa() {
           flex: 1; background: var(--cream); border: 1.5px solid var(--lav-pale);
           border-radius: 14px; padding: 11px 12px;
         }
+        .stop-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 1px; }
+        .stop-head-text { flex: 1; min-width: 0; }
         .stop-name { font-family: var(--font-serif); font-size: 14px; color: var(--text); display: block; margin-bottom: 1px; }
         .stop-type { font-size: 9px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--light); display: block; margin-bottom: 5px; }
         .stop-notes { font-size: 10px; font-weight: 300; color: var(--mid); line-height: 1.5; margin-bottom: 7px; font-style: italic; }
@@ -425,15 +427,16 @@ export default function SeeYa() {
 
         /* ── BOOK BUTTONS ── */
         .btn-book {
-          font-size: 9px; font-weight: 600; letter-spacing: .5px;
-          padding: 3px 9px; border-radius: 100px; text-decoration: none;
+          font-size: 10px; font-weight: 600; letter-spacing: .3px;
+          padding: 4px 11px; border-radius: 100px; text-decoration: none;
           transition: opacity .12s; white-space: nowrap; display: inline-block;
+          border: 1.5px solid transparent;
         }
         .btn-book:hover { opacity: .75; }
-        .btn-book-hotel     { background: var(--sky-pale);   color: var(--sky); }
-        .btn-book-resy      { background: var(--blush-pale); color: var(--blush); }
-        .btn-book-opentable { background: var(--teal-pale);  color: var(--teal-dark); }
-        .btn-book-gyg       { background: var(--gold-pale);  color: #a07820; }
+        .btn-book-hotel     { background: var(--sky-pale);   color: var(--sky);    border-color: var(--sky); }
+        .btn-book-resy      { background: var(--blush-pale); color: var(--blush);  border-color: var(--blush); }
+        .btn-book-opentable { background: var(--teal-pale);  color: var(--teal-dark); border-color: var(--teal); }
+        .btn-book-gyg       { background: var(--gold-pale);  color: #a07820;       border-color: var(--gold); }
 
         /* ── INSPIRED BY ── */
         .inspired-card {
@@ -852,17 +855,11 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                   {j < day.slots.length - 1 && <div className="stop-line" />}
                 </div>
                 <div className="stop-card">
-                  <span className="stop-name">{slot.name}</span>
-                  <span className="stop-type">{slot.type}</span>
-                  <p className="stop-notes">{slot.notes}</p>
-                  <div className="stop-foot">
-                    <span className={`badge${slot.from_saved ? ' teal' : ''}`}>{slot.from_saved ? '✦ From your Shorts' : '+ Added by AI'}</span>
-                    {slot.creator && (
-                      creatorLinks[slot.creator]
-                        ? <a href={creatorLinks[slot.creator]} target="_blank" rel="noreferrer" className="badge blush badge-link">🎥 {slot.creator} ↗</a>
-                        : <span className="badge blush">🎥 {slot.creator}</span>
-                    )}
-                    <span className={`price ${priceClass(slot.estimated_cost)}`}>{slot.estimated_cost}</span>
+                  <div className="stop-head">
+                    <div className="stop-head-text">
+                      <span className="stop-name">{slot.name}</span>
+                      <span className="stop-type">{slot.type}</span>
+                    </div>
                     {slot.type === 'hotel' && (
                       <a href={bookingComUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book hotel →</a>
                     )}
@@ -872,6 +869,16 @@ function ItinPanel({ building, itinerary, saves, creatorLinks, doneSaves, totalP
                     {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
                       <a href={gygUrl(slot.name, itinerary.city, slot.type)} target="_blank" rel="noreferrer" className="btn-book btn-book-gyg">GetYourGuide →</a>
                     )}
+                  </div>
+                  <p className="stop-notes">{slot.notes}</p>
+                  <div className="stop-foot">
+                    <span className={`badge${slot.from_saved ? ' teal' : ''}`}>{slot.from_saved ? '✦ From your Shorts' : '+ Added by AI'}</span>
+                    {slot.creator && (
+                      creatorLinks[slot.creator]
+                        ? <a href={creatorLinks[slot.creator]} target="_blank" rel="noreferrer" className="badge blush badge-link">🎥 {slot.creator} ↗</a>
+                        : <span className="badge blush">🎥 {slot.creator}</span>
+                    )}
+                    <span className={`price ${priceClass(slot.estimated_cost)}`}>{slot.estimated_cost}</span>
                   </div>
                 </div>
               </div>
