@@ -264,7 +264,7 @@ export default function SeeYa() {
         .paste-input {
           flex: 1; border: 1.5px solid var(--lav-pale); border-radius: 10px;
           background: var(--bg); font-family: var(--font-sans);
-          font-size: 13px; color: var(--text); padding: 9px 12px; outline: none;
+          font-size: 16px; color: var(--text); padding: 9px 12px; outline: none;
           transition: border-color .15s;
         }
         .paste-input:focus { border-color: var(--lav); }
@@ -309,7 +309,7 @@ export default function SeeYa() {
         .field-input {
           width: 100%; border: 1.5px solid var(--lav-pale); border-radius: 10px;
           background: var(--bg); font-family: var(--font-sans);
-          font-size: 13px; color: var(--text); padding: 9px 12px; outline: none;
+          font-size: 16px; color: var(--text); padding: 9px 12px; outline: none;
           transition: border-color .15s;
         }
         .field-input:focus { border-color: var(--lav); }
@@ -501,7 +501,7 @@ export default function SeeYa() {
         .disc-input {
           width: 100%; border: 1.5px solid var(--lav-pale); border-radius: 10px;
           background: var(--bg); font-family: var(--font-sans);
-          font-size: 13px; color: var(--text); padding: 9px 12px; outline: none;
+          font-size: 16px; color: var(--text); padding: 9px 12px; outline: none;
           transition: border-color .15s; margin-bottom: 8px;
         }
         .disc-input:focus { border-color: var(--lav); }
