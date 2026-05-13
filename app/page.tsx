@@ -766,9 +766,8 @@ function resyUrl(name: string, city: string) {
 }
 
 function openTableUrl(name: string, city: string) {
-  const q = encodeURIComponent(`${name} ${city}`)
   const id = process.env.NEXT_PUBLIC_OPENTABLE_AFFILIATE_ID
-  return `https://www.opentable.com/s?term=${q}&covers=2${id ? `&ref=${id}` : ''}`
+  return `https://www.opentable.com/s?term=${encodeURIComponent(name)}&covers=2${id ? `&ref=${id}` : ''}`
 }
 
 // Resy operates in the US only
