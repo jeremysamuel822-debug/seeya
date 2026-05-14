@@ -859,37 +859,37 @@ function downloadItinerary(itinerary: Itinerary, saves: Save[]) {
 <title>${itinerary.title}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Georgia, serif; color: #2a2a2a; background: #fff; padding: 48px; max-width: 780px; margin: auto; }
-  h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
-  .subtitle { font-size: 13px; color: #888; margin-bottom: 32px; letter-spacing: .5px; }
-  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #aaa; text-transform: uppercase; border-bottom: 1px solid #e8e4f0; padding-bottom: 6px; margin: 28px 0 14px; }
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .card { border: 1px solid #e8e4f0; border-radius: 10px; padding: 14px; }
-  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .card-name { font-weight: 700; font-size: 14px; }
-  .area { font-size: 11px; color: #aaa; margin-bottom: 6px; }
-  .notes { font-style: italic; font-size: 12px; color: #555; line-height: 1.45; margin-bottom: 8px; }
-  .card-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .meal-pill { font-size: 9px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 20px; }
+  body { font-family: Georgia, serif; color: #2a2a2a; background: #fff; padding: 56px; max-width: 820px; margin: auto; line-height: 1.5; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 40px; letter-spacing: .5px; }
+  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #aaa; text-transform: uppercase; border-bottom: 1px solid #e8e4f0; padding-bottom: 8px; margin: 40px 0 18px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { border: 1px solid #e8e4f0; border-radius: 12px; padding: 18px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .card-name { font-weight: 700; font-size: 15px; }
+  .area { font-size: 11px; color: #aaa; margin-bottom: 8px; }
+  .notes { font-style: italic; font-size: 12px; color: #555; line-height: 1.6; margin-bottom: 12px; }
+  .card-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .meal-pill { font-size: 9px; font-weight: 700; letter-spacing: .5px; padding: 4px 10px; border-radius: 20px; }
   .day-tag { font-size: 9px; font-weight: 600; color: #aaa; }
-  .badge { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+  .badge { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
   .badge.saved { background: #d6f0ec; color: #1a6b5e; }
   .badge.ai { background: #ede8f5; color: #5a4a8a; }
   .creator { font-size: 10px; color: #c45a8a; }
   .cost { font-size: 11px; font-weight: 600; color: #c8a84b; margin-left: auto; }
-  .day-block { margin-bottom: 24px; page-break-inside: avoid; }
-  .day-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .day-block { margin-bottom: 36px; page-break-inside: avoid; }
+  .day-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; }
   .day-num { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: #7c6cdc; }
-  .day-theme { font-size: 13px; font-weight: 600; color: #2a2a2a; }
-  .slot { display: flex; gap: 14px; margin-bottom: 10px; padding-left: 8px; border-left: 2px solid #e8e4f0; }
-  .slot-time { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: #aaa; width: 60px; flex-shrink: 0; padding-top: 2px; }
+  .day-theme { font-size: 14px; font-weight: 600; color: #2a2a2a; }
+  .slot { display: flex; gap: 18px; margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #e8e4f0; }
+  .slot-time { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: #aaa; width: 64px; flex-shrink: 0; padding-top: 3px; }
   .slot-body { flex: 1; }
-  .slot-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
-  .slot-notes { font-style: italic; font-size: 11px; color: #666; line-height: 1.4; margin-bottom: 6px; }
-  .slot-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .inspired-row { font-size: 11px; color: #555; margin-bottom: 4px; }
+  .slot-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .slot-notes { font-style: italic; font-size: 12px; color: #666; line-height: 1.55; margin-bottom: 8px; }
+  .slot-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .inspired-row { font-size: 11px; color: #555; margin-bottom: 6px; }
   .url { color: #7c6cdc; font-size: 10px; }
-  @media print { body { padding: 32px; } }
+  @media print { body { padding: 40px; } }
 </style>
 </head><body>
   <h1>${itinerary.title}</h1>
