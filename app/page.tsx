@@ -449,6 +449,15 @@ export default function SeeYa() {
           flex-shrink: 0; transition: background .15s;
         }
         .btn-download:hover { background: var(--lav-pale); }
+        .btn-share {
+          font-size: 10px; font-weight: 600; letter-spacing: .5px;
+          background: var(--lav-dark); color: white;
+          border: none; border-radius: 100px;
+          padding: 5px 12px; cursor: pointer; white-space: nowrap;
+          flex-shrink: 0; transition: opacity .15s;
+        }
+        .btn-share:hover { opacity: .85; }
+        .itin-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
         .itin-eyebrow {
           font-size: 9px; font-weight: 600; letter-spacing: 2.5px;
           text-transform: uppercase; color: var(--lav-dark); margin-bottom: 4px;
@@ -975,10 +984,20 @@ const OPENTABLE_COUNTRIES = new Set([
   'Japan', 'Mexico', 'Ireland', 'Netherlands',
 ])
 
+function shareItinerary(itinerary: Itinerary, setCopied: (v: boolean) => void) {
+  const encoded = encodeURIComponent(JSON.stringify(itinerary))
+  const url = `${window.location.origin}/trip#${encoded}`
+  navigator.clipboard.writeText(url).then(() => {
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  })
+}
+
 function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneSaves, totalPlaces }: {
   building: boolean; buildError: boolean; itinerary: Itinerary | null; saves: Save[]
   creatorLinks: Record<string, string>; doneSaves: number; totalPlaces: number
 }) {
+  const [copied, setCopied] = useState(false)
   const timeClass = (time: string) => {
     if (time === 'Evening') return 'eve'
     if (time === 'Afternoon') return 'pm'
@@ -1051,7 +1070,10 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
             <div className="itin-title">{itinerary.title}</div>
             <div className="itin-meta">{itinerary.city}, {itinerary.country} · {itinerary.days.length} days · {totalPlaces} places from your Shorts</div>
           </div>
-          <button className="btn-download" onClick={() => downloadItinerary(itinerary, saves)}>↓ Download</button>
+          <div className="itin-actions">
+            <button className="btn-share" onClick={() => shareItinerary(itinerary, setCopied)}>{copied ? '✓ Copied!' : '↗ Share'}</button>
+            <button className="btn-download" onClick={() => downloadItinerary(itinerary, saves)}>↓ Download</button>
+          </div>
         </div>
       </div>
 
