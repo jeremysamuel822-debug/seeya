@@ -49,6 +49,11 @@ export default function TripPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #faf8f5; }
         .wrap { font-family: Georgia, serif; color: #2a2a2a; max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+        @media print {
+          body { background: white; }
+          .no-print { display: none !important; }
+          .wrap { padding: 32px 24px; }
+        }
         h1 { font-size: 28px; font-weight: 700; line-height: 1.25; margin-bottom: 6px; }
         .meta { font-size: 13px; color: #aaa; margin-bottom: 40px; }
         .sec { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; color: #bbb; text-transform: uppercase; border-bottom: 1px solid #e8e4f0; padding-bottom: 8px; margin: 36px 0 18px; }
@@ -77,10 +82,15 @@ export default function TripPage() {
         .slot-name { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
         .slot-notes { font-style: italic; font-size: 12px; color: #666; line-height: 1.55; margin-bottom: 8px; }
         .slot-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .logo { font-family: Georgia, serif; font-size: 13px; font-weight: 700; color: #7c6cdc; margin-bottom: 32px; display: inline-block; }
+        .logo { font-family: Georgia, serif; font-size: 13px; font-weight: 700; color: #7c6cdc; display: inline-block; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+        .btn-pdf { font-size: 11px; font-weight: 600; letter-spacing: .3px; background: #7c6cdc; color: white; border: none; border-radius: 100px; padding: 8px 16px; cursor: pointer; }
       `}</style>
       <div className="wrap">
-        <div className="logo">SeeYa ✦</div>
+        <div className="top-bar no-print">
+          <div className="logo">SeeYa ✦</div>
+          <button className="btn-pdf" onClick={() => window.print()}>↓ Save as PDF</button>
+        </div>
         <h1>{itin.title}</h1>
         <div className="meta">{itin.city}, {itin.country} · {itin.days.length} days</div>
 
