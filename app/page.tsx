@@ -896,9 +896,8 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
   creatorLinks: Record<string, string>; doneSaves: number; totalPlaces: number
 }) {
   const timeClass = (time: string) => {
-    const t = time.toLowerCase()
-    if (t.includes('evening') || t.includes('night')) return 'eve'
-    if (t.includes('afternoon') || t.includes('pm')) return 'pm'
+    if (time === 'Evening') return 'eve'
+    if (time === 'Afternoon') return 'pm'
     return ''
   }
   const priceClass = (c: string) => {
@@ -1058,7 +1057,7 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
             return (
               <div key={j} className="stop-row">
                 <div className="stop-left">
-                  <span className={`stop-time${tc ? ' ' + tc : ''}`}>{slot.time.toLowerCase() === 'afternoon' ? 'Noon' : slot.time}</span>
+                  <span className={`stop-time${tc ? ' ' + tc : ''}`}>{slot.time}</span>
                   <div className={`stop-dot${tc ? ' ' + tc : ''}`} />
                   {j < day.slots.length - 1 && <div className="stop-line" />}
                 </div>

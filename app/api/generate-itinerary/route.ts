@@ -61,11 +61,9 @@ export async function POST(req: NextRequest) {
     '',
     'DAYS section (activity-focused itinerary):',
     '- EVERY saved attraction/neighborhood MUST appear in the day plan.',
-    '- Focus day slots on activities, attractions, neighborhoods, and experiences — NOT restaurants (those are in the restaurants section).',
-    '- You may add a light food note in a slot\'s notes field (e.g. "great area for lunch after") but do not create dedicated restaurant slots.',
-    '- Exception: if a saved restaurant has a [creator says: X] time tag, you may include it as a day slot at that time.',
+    '- Day slots are for activities, attractions, neighborhoods, and experiences ONLY. Never add a restaurant or hotel as a day slot — those go in their own sections.',
     '- Every day must have 4–6 slots. Fill gaps with genuinely excellent AI-suggested attractions for the city.',
-    '- TIME VALUES: the "time" field must be ONLY one of: Morning, Lunch, Afternoon, Dinner, Evening. Never use "Late Morning", "Late Afternoon", "Midday", "Night", or any other value.',
+    '- TIME VALUES: the "time" field must be ONLY one of these three values: Morning, Afternoon, Evening. No other values are valid — never use Lunch, Dinner, Late Morning, Late Afternoon, Noon, Night, or anything else.',
     '- Each day should flow naturally by area/neighborhood to minimize travel.',
     `- Tailor AI additions to a ${travelers || 'general'} trip.`,
     '- IMPORTANT: set from_saved: true ONLY for places from the saved lists above.',
@@ -101,7 +99,7 @@ export async function POST(req: NextRequest) {
     '      "theme": "one line theme for the day",',
     '      "slots": [',
     '        {',
-    '          "time": "Morning",',
+    '          "time": "Morning or Afternoon or Evening",',
     '          "name": "place name",',
     '          "type": "attraction or experience or neighborhood",',
     '          "notes": "what to do / see",',
@@ -139,14 +137,23 @@ export async function POST(req: NextRequest) {
       if (r.from_saved && creatorByName[key]) r.creator = creatorByName[key]
     }
 
-    // Enforce from_saved + creator on day slots + sort + dedup
-    const TIME_ORDER = ['Morning', 'Lunch', 'Noon', 'Afternoon', 'Dinner', 'Evening']
+    // Normalize any time value Claude invents to one of our three valid values
+    function normalizeTime(t: string): 'Morning' | 'Afternoon' | 'Evening' {
+      const lower = (t ?? '').toLowerCase()
+      if (lower.includes('evening') || lower.includes('dinner') || lower.includes('night')) return 'Evening'
+      if (lower.includes('afternoon') || lower.includes('lunch') || lower.includes('noon') || lower.includes('midday')) return 'Afternoon'
+      return 'Morning'
+    }
+
+    // Enforce from_saved + creator + time on day slots, then sort + dedup
+    const TIME_ORDER = ['Morning', 'Afternoon', 'Evening']
 
     for (const day of itinerary.days ?? []) {
       for (const slot of day.slots ?? []) {
         const key = slot.name?.toLowerCase()
         slot.from_saved = savedNames.has(key)
         if (slot.from_saved && creatorByName[key]) slot.creator = creatorByName[key]
+        slot.time = normalizeTime(slot.time)
       }
 
       day.slots.sort((a: any, b: any) => {
