@@ -50,7 +50,8 @@ async function getYouTubeData(url: string) {
   return snippet ? {
     title: snippet.title as string,
     creator: snippet.channelTitle as string,
-    content: text || snippet.description || '',
+    transcript: text,
+    description: snippet.description as string || '',
     isTranscript: text.length > 0
   } : null
 }
@@ -61,33 +62,38 @@ export async function POST(req: NextRequest) {
 
   const platform = detectPlatform(url)
   let title = ''
-  let content = ''
   let isTranscript = false
-
   let creator = ''
+  let transcript = ''
+  let description = ''
   if (platform === 'youtube') {
     const data = await getYouTubeData(url)
     title = data?.title ?? ''
     creator = data?.creator ?? ''
-    content = data?.content ?? ''
+    transcript = data?.transcript ?? ''
+    description = data?.description ?? ''
     isTranscript = data?.isTranscript ?? false
   }
 
+  const content = transcript || description
   if (!content && !title) {
     return NextResponse.json({ error: 'Could not read this link' }, { status: 422 })
   }
 
-  const sourceLabel = isTranscript ? 'Transcript (spoken words from the creator)' : 'Description'
+  const contentSection = [
+    transcript ? 'Transcript (spoken words — may contain speech-to-text errors): ' + transcript.slice(0, 6000) : '',
+    description ? 'Description (written by creator — use this to verify spelling of place names): ' + description.slice(0, 3000) : '',
+  ].filter(Boolean).join('\n\n')
 
   const prompt = [
     'You are a travel content analyst. Extract every place a creator explicitly names in this video.',
     '',
     'Title: ' + title,
-    sourceLabel + ': ' + content.slice(0, 8000),
+    contentSection,
     '',
     'RULES:',
     '- Include EVERY place the creator names — restaurants, bars, cafes, landmarks, museums, parks, neighborhoods, bridges, observation decks, experiences. All of them.',
-    '- Extract the name exactly as spoken. Do not paraphrase or substitute.',
+    '- Use the description to verify the correct spelling of place names — transcripts may contain speech-to-text errors (e.g. "Ater September" in transcript → "Atelier September" in description → use "Atelier September").',
     '- DO NOT invent names for vague descriptions. "A famous pizza spot" with no name → skip. But "Joe\'s Pizza" → include.',
     '- For each place, capture the time context: "have breakfast at X" → morning, "lunch at Y" → lunch, "dinner at Z" → dinner, "cap off the night at W" → evening, "afternoon stop at V" → afternoon. Use: morning, lunch, afternoon, dinner, evening, or null.',
     '- If no places are named at all, suggest 3-5 real places matching the city and vibe.',
