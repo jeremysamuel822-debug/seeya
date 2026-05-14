@@ -49,6 +49,7 @@ async function getYouTubeData(url: string) {
 
   return snippet ? {
     title: snippet.title as string,
+    creator: snippet.channelTitle as string,
     content: text || snippet.description || '',
     isTranscript: text.length > 0
   } : null
@@ -63,9 +64,11 @@ export async function POST(req: NextRequest) {
   let content = ''
   let isTranscript = false
 
+  let creator = ''
   if (platform === 'youtube') {
     const data = await getYouTubeData(url)
     title = data?.title ?? ''
+    creator = data?.creator ?? ''
     content = data?.content ?? ''
     isTranscript = data?.isTranscript ?? false
   }
@@ -119,7 +122,7 @@ export async function POST(req: NextRequest) {
     const raw = msg.content[0].type === 'text' ? msg.content[0].text : '{}'
     const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim()
     const extracted = JSON.parse(cleaned)
-    return NextResponse.json({ platform, title, _isTranscript: isTranscript, ...extracted })
+    return NextResponse.json({ platform, title, creator: creator || undefined, _isTranscript: isTranscript, ...extracted })
   } catch (err) {
     console.log('Parse error:', err)
     return NextResponse.json({ error: 'Could not extract locations' }, { status: 500 })
