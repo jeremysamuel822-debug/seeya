@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
     '- You may add a light food note in a slot\'s notes field (e.g. "great area for lunch after") but do not create dedicated restaurant slots.',
     '- Exception: if a saved restaurant has a [creator says: X] time tag, you may include it as a day slot at that time.',
     '- Every day must have 4–6 slots. Fill gaps with genuinely excellent AI-suggested attractions for the city.',
+    '- TIME VALUES: the "time" field must be ONLY one of: Morning, Lunch, Afternoon, Dinner, Evening. Never use "Late Morning", "Late Afternoon", "Midday", "Night", or any other value.',
     '- Each day should flow naturally by area/neighborhood to minimize travel.',
     `- Tailor AI additions to a ${travelers || 'general'} trip.`,
     '- IMPORTANT: set from_saved: true ONLY for places from the saved lists above.',
