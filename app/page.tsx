@@ -11,7 +11,7 @@ type Save = { url: string; platform: string; title: string; destination_city: st
 type ItinerarySlot = { time: string; name: string; type: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string }
 type ItineraryDay = { day: number; theme: string; slots: ItinerarySlot[] }
 type HotelRec = { name: string; area: string; notes: string; estimated_cost: string; from_saved: boolean }
-type RestaurantRec = { name: string; meal: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string; reservation_url?: 'resy' | 'opentable' | null }
+type RestaurantRec = { name: string; meal: string; suggested_day?: number; notes: string; estimated_cost: string; from_saved: boolean; creator?: string; reservation_url?: 'resy' | 'opentable' | null }
 type Itinerary = { title: string; city: string; country: string; hotels: HotelRec[]; restaurants: RestaurantRec[]; days: ItineraryDay[] }
 type DiscoverResult = { videoId: string; videoUrl: string; title: string; channelName: string; channelHandle: string; thumbnail: string; destination_city: string; destination_country: string; vibe_tags: string[]; locations: Location[] }
 
@@ -530,6 +530,7 @@ export default function SeeYa() {
         .meal-pill.lunch     { background: var(--teal-pale); color: var(--teal-dark); }
         .meal-pill.dinner    { background: var(--blush-pale); color: var(--blush); }
         .meal-pill.any       { background: var(--lav-pale); color: var(--lav-dark); }
+        .day-suggest { font-size: 9px; font-weight: 600; letter-spacing: .5px; color: var(--light); white-space: nowrap; }
 
         /* ── INSPIRED BY ── */
         .inspired-card {
@@ -1027,6 +1028,7 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
                 </div>
                 <div className="rest-notes">{r.notes}</div>
                 <div className="rest-foot">
+                  {r.suggested_day && <span className="day-suggest">Day {r.suggested_day}</span>}
                   <span className={`badge${r.from_saved ? ' teal' : ''}`}>{r.from_saved ? '✦ From your Shorts' : '+ AI pick'}</span>
                   {r.creator && (
                     creatorLinks[r.creator]
