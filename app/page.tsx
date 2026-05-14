@@ -1020,7 +1020,7 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
         <>
           <div className="sec-label" style={{ marginTop: 20 }}>Where to eat</div>
           <div className="h-scroll">
-            {restaurants.map((r, i) => (
+            {[...restaurants].sort((a, b) => (a.suggested_day ?? 999) - (b.suggested_day ?? 999)).map((r, i) => (
               <div key={i} className="rest-card">
                 <div className="rest-head">
                   <div className="rest-name">{r.name}</div>
