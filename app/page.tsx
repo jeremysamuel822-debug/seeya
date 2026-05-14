@@ -1069,7 +1069,7 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
                       <span className="stop-type">{slot.type}</span>
                     </div>
                     {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
-                      <a href={gygUrl(slot.name, itinerary.city, slot.type)} target="_blank" rel="noreferrer" className="btn-book btn-book-gyg">GetYourGuide →</a>
+                      <a href={gygUrl(slot.name, itinerary.city, slot.type)} target="_blank" rel="noreferrer" className="btn-book btn-book-gyg">Book →</a>
                     )}
                   </div>
                   <p className="stop-notes">{slot.notes}</p>
