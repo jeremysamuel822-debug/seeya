@@ -43,6 +43,21 @@ export default function SeeYa() {
       const links: Record<string, string> = {}
       parsed.forEach((s: Save) => { if (s.creator) links[s.creator] = s.url })
       setCreatorLinks(links)
+      // Backfill creator for old saves that predate this field
+      const missing: Save[] = parsed.filter((s: Save) => !s.creator && s.platform === 'youtube')
+      missing.forEach(async (s: Save) => {
+        try {
+          const data = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(s.url)}&format=json`).then(r => r.json())
+          const creator: string = data.author_name
+          if (!creator) return
+          setSaves(prev => {
+            const updated = prev.map(p => p.url === s.url ? { ...p, creator } : p)
+            localStorage.setItem('seeya_saves', JSON.stringify(updated.filter(p => p.status === 'done')))
+            return updated
+          })
+          setCreatorLinks(prev => ({ ...prev, [creator]: s.url }))
+        } catch {}
+      })
     } catch {}
   }, [])
 
