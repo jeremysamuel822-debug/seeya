@@ -200,12 +200,46 @@ export default function SeeYa() {
           margin: 0 auto;
           background: var(--cream);
         }
-        @media (min-width: 620px) {
+        @media (min-width: 620px) and (max-width: 899px) {
           .mobile-shell {
             margin: 0 auto;
             box-shadow: 0 0 0 1px rgba(58,48,40,.06), 0 20px 60px rgba(58,48,40,.1);
           }
           body { background: var(--bg); }
+        }
+
+        /* ── MOBILE TAB TOGGLE ── */
+        @media (max-width: 899px) {
+          .desktop-body { display: contents; }
+          .desktop-col { display: none; }
+          .desktop-col.active { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+        }
+
+        /* ── DESKTOP TWO-COLUMN ── */
+        @media (min-width: 900px) {
+          body { background: var(--bg); }
+          .mobile-shell {
+            max-width: 1280px;
+            background: transparent;
+            box-shadow: none;
+          }
+          .nav-tabs { display: none; }
+          .desktop-body {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 20px;
+            padding: 20px 24px;
+            align-items: start;
+          }
+          .desktop-col {
+            display: block !important;
+            background: var(--cream);
+            border-radius: 16px;
+            overflow: hidden;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+            box-shadow: 0 0 0 1px rgba(58,48,40,.06), 0 4px 20px rgba(58,48,40,.08);
+          }
         }
 
         /* ── GRADIENT HEADER ── */
@@ -550,24 +584,25 @@ export default function SeeYa() {
           ))}
         </div>
 
-        {mobileTab === 'saves' && (
-          <div className="tab-body">
-            <SavesPanel
-              url={url} setUrl={setUrl} addSave={addSave}
-              trip={trip} tripOpen={tripOpen} setTripOpen={setTripOpen}
-              persistTrip={persistTrip} tripSummaryTags={tripSummaryTags}
-              saves={saves} doneSaves={doneSaves} totalPlaces={totalPlaces}
-              building={building} buildItinerary={buildItinerary} removeSave={removeSave}
-            />
+        <div className="desktop-body">
+          <div className={`desktop-col${mobileTab === 'saves' ? ' active' : ''}`}>
+            <div className="tab-body">
+              <SavesPanel
+                url={url} setUrl={setUrl} addSave={addSave}
+                trip={trip} tripOpen={tripOpen} setTripOpen={setTripOpen}
+                persistTrip={persistTrip} tripSummaryTags={tripSummaryTags}
+                saves={saves} doneSaves={doneSaves} totalPlaces={totalPlaces}
+                building={building} buildItinerary={buildItinerary} removeSave={removeSave}
+              />
+            </div>
           </div>
-        )}
 
-
-        {mobileTab === 'itin' && (
-          <div className="tab-body">
-            <ItinPanel building={building} buildError={buildError} itinerary={itinerary} saves={saves} creatorLinks={creatorLinks} doneSaves={doneSaves} totalPlaces={totalPlaces} />
+          <div className={`desktop-col${mobileTab === 'itin' ? ' active' : ''}`}>
+            <div className="tab-body">
+              <ItinPanel building={building} buildError={buildError} itinerary={itinerary} saves={saves} creatorLinks={creatorLinks} doneSaves={doneSaves} totalPlaces={totalPlaces} />
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
     </>
