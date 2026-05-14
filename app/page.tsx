@@ -690,7 +690,11 @@ function SavesPanel({ url, setUrl, addSave, trip, tripOpen, setTripOpen, persist
   saves: Save[]; doneSaves: number; totalPlaces: number
   building: boolean; buildItinerary: () => void; removeSave: (i: number) => void
 }) {
-  const platformIcon = (p: string) => p === 'youtube' ? '▶' : p === 'instagram' ? '◈' : p === 'tiktok' ? '♪' : '✍'
+  const platformIcon = (p: string) => p === 'youtube'
+    ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="5,3 13,8 5,13" fill="var(--lav-dark)"/></svg>
+    : p === 'instagram' ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="3" width="10" height="10" rx="3" stroke="var(--lav-dark)" strokeWidth="1.5"/><circle cx="8" cy="8" r="2.5" stroke="var(--lav-dark)" strokeWidth="1.5"/><circle cx="11.2" cy="4.8" r=".8" fill="var(--lav-dark)"/></svg>
+    : p === 'tiktok' ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 2c.3 2 1.5 2.8 3 3v2c-1.1 0-2-.4-3-1v4.5a4 4 0 1 1-2-3.5V9a2 2 0 1 0 2 2V2h0z" fill="var(--lav-dark)"/></svg>
+    : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="var(--lav-dark)" strokeWidth="1.5" strokeLinecap="round"/></svg>
 
   return (
     <>
