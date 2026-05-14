@@ -446,9 +446,11 @@ export default function SeeYa() {
         .stop-row { display: flex; gap: 10px; margin-bottom: 8px; }
         .stop-left { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; }
         .stop-time { font-size: 8px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--lav); }
+        .stop-time.mid { color: var(--gold); }
         .stop-time.pm { color: var(--blush); }
         .stop-time.eve { color: var(--teal); }
         .stop-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--lav); flex-shrink: 0; margin: 4px 0; }
+        .stop-dot.mid { background: var(--gold); }
         .stop-dot.pm { background: var(--blush); }
         .stop-dot.eve { background: var(--teal); }
         .stop-line { flex: 1; width: 1.5px; background: var(--lav-pale); }
@@ -898,6 +900,7 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
   const timeClass = (time: string) => {
     if (time === 'Evening') return 'eve'
     if (time === 'Afternoon') return 'pm'
+    if (time === 'Midday') return 'mid'
     return ''
   }
   const priceClass = (c: string) => {
