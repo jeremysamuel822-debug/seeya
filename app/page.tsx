@@ -799,47 +799,113 @@ function SavesPanel({ url, setUrl, addSave, trip, tripOpen, setTripOpen, persist
 }
 
 function downloadItinerary(itinerary: Itinerary, saves: Save[]) {
-  const lines: string[] = []
-  lines.push(`${itinerary.title}`)
-  lines.push(`${itinerary.city}, ${itinerary.country} · ${itinerary.days.length} days`)
-  lines.push('')
-
-  // Debug: show what was extracted from each save
-  const allLocations = saves.filter(s => s.status === 'done').flatMap(s =>
-    s.locations.map(l => `  - ${l.name} (${(l as any).suggested_time ?? 'no time'}) — ${l.type}`)
-  )
-  if (allLocations.length > 0) {
-    lines.push('EXTRACTED FROM YOUR SHORTS:')
-    allLocations.forEach(l => lines.push(l))
-    lines.push('')
-  }
-
-  for (const day of itinerary.days) {
-    lines.push(`DAY ${day.day} — ${day.theme.toUpperCase()}`)
-    lines.push('')
-    for (const slot of day.slots) {
-      lines.push(`[${slot.time.toUpperCase()}] ${slot.name}`)
-      lines.push(`${slot.type} · ${slot.estimated_cost}`)
-      lines.push(slot.notes)
-      const source = slot.from_saved ? '✦ From your Shorts' : '+ Added by AI'
-      const creator = slot.creator ? ` · 🎥 ${slot.creator}` : ''
-      lines.push(`${source}${creator}`)
-      lines.push('')
-    }
-  }
-
   const inspiredSaves = saves.filter(s => s.creator)
-  if (inspiredSaves.length > 0) {
-    lines.push('INSPIRED BY')
-    inspiredSaves.forEach(s => lines.push(`${s.creator} — ${s.url}`))
-  }
+  const mealColor: Record<string, string> = { breakfast: '#f5f0dc', lunch: '#d6f0ec', dinner: '#fde8e8', any: '#ede8f5' }
+  const mealText: Record<string, string>  = { breakfast: '#8a7a2a', lunch: '#1a6b5e', dinner: '#c45a5a', any: '#5a4a8a' }
 
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain' })
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = `${itinerary.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.txt`
-  a.click()
-  URL.revokeObjectURL(a.href)
+  const hotelRows = (itinerary.hotels ?? []).map(h => `
+    <div class="card">
+      <div class="card-head"><span class="card-name">${h.name}</span><span class="cost">${h.estimated_cost}</span></div>
+      <div class="area">${h.area}</div>
+      <div class="notes">${h.notes}</div>
+      ${h.from_saved ? '<span class="badge saved">✦ From your Shorts</span>' : '<span class="badge ai">+ AI pick</span>'}
+    </div>`).join('')
+
+  const sortedRests = [...(itinerary.restaurants ?? [])].sort((a, b) => (a.suggested_day ?? 999) - (b.suggested_day ?? 999))
+  const restRows = sortedRests.map(r => {
+    const bg = mealColor[r.meal] ?? '#f0f0f0'
+    const fg = mealText[r.meal] ?? '#444'
+    return `
+    <div class="card">
+      <div class="card-head">
+        <span class="card-name">${r.name}</span>
+        <span class="meal-pill" style="background:${bg};color:${fg}">${r.meal.toUpperCase()}</span>
+      </div>
+      <div class="notes">${r.notes}</div>
+      <div class="card-foot">
+        ${r.suggested_day ? `<span class="day-tag">Day ${r.suggested_day}</span>` : ''}
+        ${r.from_saved ? '<span class="badge saved">✦ From your Shorts</span>' : '<span class="badge ai">+ AI pick</span>'}
+        ${r.creator ? `<span class="creator">🎥 ${r.creator}</span>` : ''}
+        <span class="cost">${r.estimated_cost}</span>
+      </div>
+    </div>`}).join('')
+
+  const dayBlocks = (itinerary.days ?? []).map(day => {
+    const slots = day.slots.map(slot => `
+      <div class="slot">
+        <div class="slot-time">${slot.time.toUpperCase()}</div>
+        <div class="slot-body">
+          <div class="slot-name">${slot.name}</div>
+          <div class="slot-notes">${slot.notes}</div>
+          <div class="slot-foot">
+            ${slot.from_saved ? '<span class="badge saved">✦ From your Shorts</span>' : '<span class="badge ai">+ AI pick</span>'}
+            ${slot.creator ? `<span class="creator">🎥 ${slot.creator}</span>` : ''}
+            <span class="cost">${slot.estimated_cost}</span>
+          </div>
+        </div>
+      </div>`).join('')
+    return `
+    <div class="day-block">
+      <div class="day-header"><span class="day-num">DAY ${String(day.day).padStart(2, '0')}</span><span class="day-theme">${day.theme}</span></div>
+      ${slots}
+    </div>`
+  }).join('')
+
+  const inspired = inspiredSaves.length > 0 ? `
+    <div class="section-label">Inspired by</div>
+    ${inspiredSaves.map(s => `<div class="inspired-row">🎥 ${s.creator} — <span class="url">${s.url}</span></div>`).join('')}` : ''
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>${itinerary.title}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, serif; color: #2a2a2a; background: #fff; padding: 48px; max-width: 780px; margin: auto; }
+  h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 32px; letter-spacing: .5px; }
+  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #aaa; text-transform: uppercase; border-bottom: 1px solid #e8e4f0; padding-bottom: 6px; margin: 28px 0 14px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { border: 1px solid #e8e4f0; border-radius: 10px; padding: 14px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .card-name { font-weight: 700; font-size: 14px; }
+  .area { font-size: 11px; color: #aaa; margin-bottom: 6px; }
+  .notes { font-style: italic; font-size: 12px; color: #555; line-height: 1.45; margin-bottom: 8px; }
+  .card-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .meal-pill { font-size: 9px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 20px; }
+  .day-tag { font-size: 9px; font-weight: 600; color: #aaa; }
+  .badge { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+  .badge.saved { background: #d6f0ec; color: #1a6b5e; }
+  .badge.ai { background: #ede8f5; color: #5a4a8a; }
+  .creator { font-size: 10px; color: #c45a8a; }
+  .cost { font-size: 11px; font-weight: 600; color: #c8a84b; margin-left: auto; }
+  .day-block { margin-bottom: 24px; page-break-inside: avoid; }
+  .day-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .day-num { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: #7c6cdc; }
+  .day-theme { font-size: 13px; font-weight: 600; color: #2a2a2a; }
+  .slot { display: flex; gap: 14px; margin-bottom: 10px; padding-left: 8px; border-left: 2px solid #e8e4f0; }
+  .slot-time { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: #aaa; width: 60px; flex-shrink: 0; padding-top: 2px; }
+  .slot-body { flex: 1; }
+  .slot-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+  .slot-notes { font-style: italic; font-size: 11px; color: #666; line-height: 1.4; margin-bottom: 6px; }
+  .slot-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .inspired-row { font-size: 11px; color: #555; margin-bottom: 4px; }
+  .url { color: #7c6cdc; font-size: 10px; }
+  @media print { body { padding: 32px; } }
+</style>
+</head><body>
+  <h1>${itinerary.title}</h1>
+  <div class="subtitle">${itinerary.city}, ${itinerary.country} · ${itinerary.days.length} days</div>
+  ${(itinerary.hotels ?? []).length > 0 ? `<div class="section-label">Where to stay</div><div class="cards">${hotelRows}</div>` : ''}
+  ${sortedRests.length > 0 ? `<div class="section-label">Where to eat</div><div class="cards">${restRows}</div>` : ''}
+  <div class="section-label">Day by day</div>
+  ${dayBlocks}
+  ${inspired}
+</body></html>`
+
+  const w = window.open('', '_blank')
+  if (!w) return
+  w.document.write(html)
+  w.document.close()
+  w.onload = () => { w.print() }
 }
 
 function bookingComUrl(name: string, city: string) {
