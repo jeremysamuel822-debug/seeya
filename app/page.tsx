@@ -8,9 +8,11 @@ const BUDGET_OPTIONS = ['Budget', 'Mid-range', 'Luxury']
 type TripDetails = { destination: string; tripLength: string; travelers: string; budget: string; vibe: string }
 type Location = { name: string; type: string; city: string; notes: string; estimated_cost: string; creator?: string }
 type Save = { url: string; platform: string; title: string; destination_city: string; destination_country: string; vibe_tags: string[]; locations: Location[]; status: 'loading' | 'done' | 'error'; creator?: string }
-type ItinerarySlot = { time: string; name: string; type: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string; reservation_url?: 'resy' | 'opentable' | null }
+type ItinerarySlot = { time: string; name: string; type: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string }
 type ItineraryDay = { day: number; theme: string; slots: ItinerarySlot[] }
-type Itinerary = { title: string; city: string; country: string; days: ItineraryDay[] }
+type HotelRec = { name: string; area: string; notes: string; estimated_cost: string; from_saved: boolean }
+type RestaurantRec = { name: string; meal: string; notes: string; estimated_cost: string; from_saved: boolean; creator?: string; reservation_url?: 'resy' | 'opentable' | null }
+type Itinerary = { title: string; city: string; country: string; hotels: HotelRec[]; restaurants: RestaurantRec[]; days: ItineraryDay[] }
 type DiscoverResult = { videoId: string; videoUrl: string; title: string; channelName: string; channelHandle: string; thumbnail: string; destination_city: string; destination_country: string; vibe_tags: string[]; locations: Location[] }
 
 const BLANK_TRIP: TripDetails = { destination: '', tripLength: '', travelers: '', budget: '', vibe: '' }
@@ -484,6 +486,49 @@ export default function SeeYa() {
         .btn-book-opentable { background: var(--teal-pale);  color: var(--teal-dark); border-color: var(--teal); }
         .btn-book-gyg       { background: var(--gold-pale);  color: #a07820;       border-color: var(--gold); }
 
+        /* ── HORIZONTAL SCROLL ROWS ── */
+        .h-scroll {
+          display: flex; gap: 10px;
+          overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px;
+          scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+        }
+        .h-scroll::-webkit-scrollbar { height: 4px; }
+        .h-scroll::-webkit-scrollbar-track { background: transparent; }
+        .h-scroll::-webkit-scrollbar-thumb { background: var(--lav-pale); border-radius: 2px; }
+
+        /* ── HOTEL CARDS ── */
+        .hotel-card {
+          background: var(--cream); border: 1.5px solid var(--lav-pale);
+          border-radius: 14px; padding: 13px 14px;
+          flex-shrink: 0; width: 240px; scroll-snap-align: start;
+          display: flex; flex-direction: column;
+        }
+        .hotel-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+        .hotel-name { font-family: var(--font-serif); font-size: 14px; color: var(--text); line-height: 1.2; }
+        .hotel-area { font-size: 10px; color: var(--lav); font-weight: 500; margin-top: 2px; }
+        .hotel-notes { font-size: 11px; font-weight: 300; color: var(--mid); line-height: 1.5; font-style: italic; margin-bottom: 10px; flex: 1; }
+        .hotel-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+
+        /* ── RESTAURANT CARDS ── */
+        .rest-card {
+          background: var(--cream); border: 1.5px solid var(--lav-pale);
+          border-radius: 14px; padding: 12px 14px;
+          flex-shrink: 0; width: 220px; scroll-snap-align: start;
+          display: flex; flex-direction: column;
+        }
+        .rest-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
+        .rest-name { font-family: var(--font-serif); font-size: 13px; color: var(--text); line-height: 1.2; }
+        .rest-notes { font-size: 11px; font-weight: 300; color: var(--mid); line-height: 1.5; font-style: italic; margin-bottom: 8px; flex: 1; }
+        .rest-foot { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: auto; }
+        .meal-pill {
+          font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+          padding: 3px 9px; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+        }
+        .meal-pill.breakfast { background: var(--gold-pale); color: #a07820; }
+        .meal-pill.lunch     { background: var(--teal-pale); color: var(--teal-dark); }
+        .meal-pill.dinner    { background: var(--blush-pale); color: var(--blush); }
+        .meal-pill.any       { background: var(--lav-pale); color: var(--lav-dark); }
+
         /* ── INSPIRED BY ── */
         .inspired-card {
           background: var(--cream); border: 1.5px solid var(--lav-pale);
@@ -910,6 +955,8 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
   )
 
   const inspiredSaves = saves.filter(s => s.creator && creatorLinks[s.creator])
+  const hotels = itinerary.hotels ?? []
+  const restaurants = itinerary.restaurants ?? []
 
   return (
     <>
@@ -940,6 +987,66 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
         </div>
       )}
 
+      {/* ── WHERE TO STAY ── */}
+      {hotels.length > 0 && (
+        <>
+          <div className="sec-label">Where to stay</div>
+          <div className="h-scroll">
+            {hotels.map((h, i) => (
+              <div key={i} className="hotel-card">
+                <div className="hotel-card-head">
+                  <div>
+                    <div className="hotel-name">{h.name}</div>
+                    <div className="hotel-area">{h.area}</div>
+                  </div>
+                  <a href={bookingComUrl(h.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book →</a>
+                </div>
+                <div className="hotel-notes">{h.notes}</div>
+                <div className="hotel-foot">
+                  <span className={`badge${h.from_saved ? ' teal' : ''}`}>{h.from_saved ? '✦ From your Shorts' : '+ AI pick'}</span>
+                  <span className={`price ${priceClass(h.estimated_cost)}`}>{h.estimated_cost}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ── WHERE TO EAT ── */}
+      {restaurants.length > 0 && (
+        <>
+          <div className="sec-label" style={{ marginTop: 20 }}>Where to eat</div>
+          <div className="h-scroll">
+            {restaurants.map((r, i) => (
+              <div key={i} className="rest-card">
+                <div className="rest-head">
+                  <div className="rest-name">{r.name}</div>
+                  <span className={`meal-pill ${r.meal}`}>{r.meal}</span>
+                </div>
+                <div className="rest-notes">{r.notes}</div>
+                <div className="rest-foot">
+                  <span className={`badge${r.from_saved ? ' teal' : ''}`}>{r.from_saved ? '✦ From your Shorts' : '+ AI pick'}</span>
+                  {r.creator && (
+                    creatorLinks[r.creator]
+                      ? <a href={creatorLinks[r.creator]} target="_blank" rel="noreferrer" className="badge blush badge-link">🎥 {r.creator} ↗</a>
+                      : <span className="badge blush">🎥 {r.creator}</span>
+                  )}
+                  <span className={`price ${priceClass(r.estimated_cost)}`}>{r.estimated_cost}</span>
+                  {r.reservation_url === 'resy' && (
+                    <a href={resyUrl(r.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy" style={{ marginLeft: 'auto' }}>Reserve →</a>
+                  )}
+                  {r.reservation_url === 'opentable' && (
+                    <a href={openTableUrl(r.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy" style={{ marginLeft: 'auto' }}>Reserve →</a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ── DAY PLAN ── */}
+      <div className="sec-label" style={{ marginTop: 20 }}>Day by day</div>
       {itinerary.days.map(day => (
         <div key={day.day}>
           <div className="day-row">
@@ -961,15 +1068,6 @@ function ItinPanel({ building, buildError, itinerary, saves, creatorLinks, doneS
                       <span className="stop-name">{slot.name}</span>
                       <span className="stop-type">{slot.type}</span>
                     </div>
-                    {slot.type === 'hotel' && (
-                      <a href={bookingComUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-hotel">Book hotel →</a>
-                    )}
-                    {slot.type === 'restaurant' && slot.reservation_url === 'resy' && (
-                      <a href={resyUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Reserve →</a>
-                    )}
-                    {slot.type === 'restaurant' && slot.reservation_url === 'opentable' && (
-                      <a href={openTableUrl(slot.name, itinerary.city)} target="_blank" rel="noreferrer" className="btn-book btn-book-resy">Reserve →</a>
-                    )}
                     {(slot.type === 'experience' || (slot.type === 'attraction' && slot.estimated_cost !== 'free')) && (
                       <a href={gygUrl(slot.name, itinerary.city, slot.type)} target="_blank" rel="noreferrer" className="btn-book btn-book-gyg">GetYourGuide →</a>
                     )}
