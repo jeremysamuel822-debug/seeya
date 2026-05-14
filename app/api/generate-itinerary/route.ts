@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     'DAYS section (activity-focused itinerary):',
     '- EVERY saved attraction/neighborhood MUST appear in the day plan.',
     '- Day slots are for activities, attractions, neighborhoods, and experiences ONLY. Never add a restaurant or hotel as a day slot — those go in their own sections.',
-    '- Every day must have 4–6 slots. Fill gaps with genuinely excellent AI-suggested attractions for the city.',
+    '- Each day has exactly 3 slots — one Morning, one Afternoon, one Evening. No more, no less.',
     '- TIME VALUES: the "time" field must be ONLY one of these three values: Morning, Afternoon, Evening. No other values are valid — never use Lunch, Dinner, Late Morning, Late Afternoon, Noon, Night, or anything else.',
     '- Each day should flow naturally by area/neighborhood to minimize travel.',
     `- Tailor AI additions to a ${travelers || 'general'} trip.`,
@@ -162,16 +162,13 @@ export async function POST(req: NextRequest) {
         return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
       })
 
+      // Keep only the first slot per time bucket — drop any overflow
       const usedTimes = new Set<string>()
-      for (const slot of day.slots ?? []) {
-        if (usedTimes.has(slot.time)) {
-          const idx = TIME_ORDER.indexOf(slot.time)
-          for (let i = idx + 1; i < TIME_ORDER.length; i++) {
-            if (!usedTimes.has(TIME_ORDER[i])) { slot.time = TIME_ORDER[i]; break }
-          }
-        }
+      day.slots = day.slots.filter((slot: any) => {
+        if (usedTimes.has(slot.time)) return false
         usedTimes.add(slot.time)
-      }
+        return true
+      })
     }
 
     return NextResponse.json(itinerary)
