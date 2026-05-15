@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import LZString from 'lz-string'
 
 const LENGTH_OPTIONS = ['Weekend', '3–4 days', '5–7 days', '2+ weeks']
 const TRAVELER_OPTIONS = ['Solo', 'Couple', 'Girls Trip', 'Honeymoon', 'Family', 'Friends']
@@ -988,9 +989,21 @@ const OPENTABLE_COUNTRIES = new Set([
   'Japan', 'Mexico', 'Ireland', 'Netherlands',
 ])
 
-function shareItinerary(itinerary: Itinerary, setCopied: (v: boolean) => void) {
-  const encoded = encodeURIComponent(JSON.stringify(itinerary))
-  const url = `${window.location.origin}/trip#${encoded}`
+async function shareItinerary(itinerary: Itinerary, setCopied: (v: boolean) => void) {
+  const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(itinerary))
+  const url = `${window.location.origin}/trip#${compressed}`
+  const title = itinerary.title
+  const text = `Check out my ${itinerary.city} itinerary on SeeYa!`
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url })
+      return
+    } catch {
+      // user cancelled or share failed — fall through to clipboard
+    }
+  }
+
   navigator.clipboard.writeText(url).then(() => {
     setCopied(true)
     setTimeout(() => setCopied(false), 2500)

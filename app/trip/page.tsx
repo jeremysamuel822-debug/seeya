@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import LZString from 'lz-string'
 
 type HotelRec = { name: string; area: string; notes: string; estimated_cost: string; from_saved: boolean }
 type RestaurantRec = { name: string; meal: string; suggested_day?: number; notes: string; estimated_cost: string; from_saved: boolean; creator?: string }
@@ -17,12 +18,16 @@ const MEAL_STYLE: Record<string, { bg: string; color: string }> = {
 export default function TripPage() {
   const [itin, setItin] = useState<Itinerary | null>(null)
   const [error, setError] = useState(false)
+  const [shared, setShared] = useState(false)
 
   useEffect(() => {
     const hash = window.location.hash.slice(1)
     if (!hash) { setError(true); return }
     try {
-      setItin(JSON.parse(decodeURIComponent(hash)))
+      // Try lz-string first, fall back to legacy plain JSON for old links
+      const decompressed = LZString.decompressFromEncodedURIComponent(hash)
+      const json = decompressed ?? decodeURIComponent(hash)
+      setItin(JSON.parse(json))
     } catch {
       setError(true)
     }
@@ -83,13 +88,27 @@ export default function TripPage() {
         .slot-notes { font-style: italic; font-size: 12px; color: #666; line-height: 1.55; margin-bottom: 8px; }
         .slot-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .logo { font-family: Georgia, serif; font-size: 13px; font-weight: 700; color: #7c6cdc; display: inline-block; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
-        .btn-pdf { font-size: 11px; font-weight: 600; letter-spacing: .3px; background: #7c6cdc; color: white; border: none; border-radius: 100px; padding: 8px 16px; cursor: pointer; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 32px; }
+        .top-bar-actions { display: flex; gap: 8px; }
+        .btn-share { font-size: 11px; font-weight: 600; letter-spacing: .3px; background: #7c6cdc; color: white; border: none; border-radius: 100px; padding: 8px 16px; cursor: pointer; }
+        .btn-pdf { font-size: 11px; font-weight: 600; letter-spacing: .3px; background: white; color: #7c6cdc; border: 1.5px solid #7c6cdc; border-radius: 100px; padding: 8px 16px; cursor: pointer; }
+        @media (max-width: 540px) { .btn-pdf { display: none; } }
       `}</style>
       <div className="wrap">
         <div className="top-bar no-print">
           <div className="logo">SeeYa ✦</div>
-          <button className="btn-pdf" onClick={() => window.print()}>↓ Save as PDF</button>
+          <div className="top-bar-actions">
+            <button className="btn-share" onClick={async () => {
+              const url = window.location.href
+              if (navigator.share) {
+                try { await navigator.share({ title: itin.title, url }); return } catch {}
+              }
+              await navigator.clipboard.writeText(url)
+              setShared(true)
+              setTimeout(() => setShared(false), 2500)
+            }}>{shared ? '✓ Copied!' : '↗ Share'}</button>
+            <button className="btn-pdf" onClick={() => window.print()}>↓ Save as PDF</button>
+          </div>
         </div>
         <h1>{itin.title}</h1>
         <div className="meta">{itin.city}, {itin.country} · {itin.days.length} days</div>
