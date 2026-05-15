@@ -101,7 +101,7 @@ export default function TripPage() {
             <button className="btn-share" onClick={async () => {
               const url = window.location.href
               if (navigator.share) {
-                try { await navigator.share({ title: itin.title, url }); return } catch {}
+                try { await navigator.share({ title: itin.title, text: `Check out my ${itin.city} itinerary on SeeYa!\n${url}` }); return } catch {}
               }
               await navigator.clipboard.writeText(url)
               setShared(true)

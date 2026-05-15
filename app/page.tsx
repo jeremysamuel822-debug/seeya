@@ -997,7 +997,7 @@ async function shareItinerary(itinerary: Itinerary, setCopied: (v: boolean) => v
 
   if (navigator.share) {
     try {
-      await navigator.share({ title, text, url })
+      await navigator.share({ title, text: `${text}\n${url}` })
       return
     } catch {
       // user cancelled or share failed — fall through to clipboard
