@@ -990,17 +990,34 @@ const OPENTABLE_COUNTRIES = new Set([
 ])
 
 async function shareItinerary(itinerary: Itinerary, setCopied: (v: boolean) => void) {
-  const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(itinerary))
-  const url = `${window.location.origin}/trip#${compressed}`
-  const title = itinerary.title
-  const text = `Check out my ${itinerary.city} itinerary on SeeYa!`
+  // Save to Supabase and get a short ID
+  let url: string
+  try {
+    const res = await fetch('/api/trips', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(itinerary),
+    })
+    const data = await res.json()
+    if (data.id) {
+      url = `${window.location.origin}/trip/${data.id}`
+    } else {
+      throw new Error('no id')
+    }
+  } catch {
+    // Fall back to compressed hash if Supabase fails
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(itinerary))
+    url = `${window.location.origin}/trip#${compressed}`
+  }
+
+  const text = `Check out my ${itinerary.city} itinerary on SeeYa!\n${url}`
 
   if (navigator.share) {
     try {
-      await navigator.share({ title, text: `${text}\n${url}` })
+      await navigator.share({ title: itinerary.title, text })
       return
     } catch {
-      // user cancelled or share failed — fall through to clipboard
+      // user cancelled — fall through to clipboard
     }
   }
 
