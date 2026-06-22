@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
 
   const content = transcript || description
   if (!content && !title) {
-    return NextResponse.json({ error: 'Could not read this link', keyPrefix: process.env.SUPADATA_API_KEY?.slice(0, 6) }, { status: 422 })
+    return NextResponse.json({ error: 'Could not read this link' }, { status: 422 })
   }
 
   const contentSection = [
