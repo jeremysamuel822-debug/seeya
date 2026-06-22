@@ -14,6 +14,32 @@ function detectPlatform(url: string) {
   return 'blog'
 }
 
+async function getTikTokData(url: string) {
+  const apiKey = process.env.SUPADATA_API_KEY
+  if (!apiKey) return null
+
+  const [transcriptRes, metadataRes] = await Promise.allSettled([
+    fetch(`https://api.supadata.ai/v1/transcript?url=${encodeURIComponent(url)}&text=true`, {
+      headers: { 'x-api-key': apiKey }
+    }).then(r => r.ok ? r.json() : null),
+    fetch(`https://api.supadata.ai/v1/metadata?url=${encodeURIComponent(url)}`, {
+      headers: { 'x-api-key': apiKey }
+    }).then(r => r.ok ? r.json() : null)
+  ])
+
+  const transcriptData = transcriptRes.status === 'fulfilled' ? transcriptRes.value : null
+  const metadata = metadataRes.status === 'fulfilled' ? metadataRes.value : null
+
+  const rawText: string = transcriptData?.content ?? ''
+  const text = rawText.length >= 100 ? rawText.replace(/\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim() : ''
+
+  const description: string = metadata?.description ?? ''
+  const title: string = metadata?.title || description.slice(0, 80) || ''
+  const creator: string = metadata?.author?.username || metadata?.author?.displayName || ''
+
+  return { title, creator, transcript: text, description, isTranscript: text.length > 0 }
+}
+
 function extractVideoId(url: string) {
   return url.match(/(?:shorts\/|v=|youtu\.be\/)([^&?/]+)/)?.[1] ?? null
 }
@@ -68,6 +94,13 @@ export async function POST(req: NextRequest) {
   let description = ''
   if (platform === 'youtube') {
     const data = await getYouTubeData(url)
+    title = data?.title ?? ''
+    creator = data?.creator ?? ''
+    transcript = data?.transcript ?? ''
+    description = data?.description ?? ''
+    isTranscript = data?.isTranscript ?? false
+  } else if (platform === 'tiktok') {
+    const data = await getTikTokData(url)
     title = data?.title ?? ''
     creator = data?.creator ?? ''
     transcript = data?.transcript ?? ''
