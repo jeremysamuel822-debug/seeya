@@ -21,19 +21,14 @@ async function getTikTokData(url: string) {
   const [transcriptRes, metadataRes] = await Promise.allSettled([
     fetch(`https://api.supadata.ai/v1/transcript?url=${encodeURIComponent(url)}&text=true`, {
       headers: { 'x-api-key': apiKey }
-    }).then(async r => ({ status: r.status, ok: r.ok, body: await r.text() })),
+    }).then(r => r.ok ? r.json() : null),
     fetch(`https://api.supadata.ai/v1/metadata?url=${encodeURIComponent(url)}`, {
       headers: { 'x-api-key': apiKey }
-    }).then(async r => ({ status: r.status, ok: r.ok, body: await r.text() }))
+    }).then(r => r.ok ? r.json() : null)
   ])
 
-  const debug = {
-    transcriptOutcome: transcriptRes.status === 'fulfilled' ? transcriptRes.value : { rejected: String((transcriptRes as PromiseRejectedResult).reason) },
-    metadataOutcome: metadataRes.status === 'fulfilled' ? metadataRes.value : { rejected: String((metadataRes as PromiseRejectedResult).reason) },
-  }
-
-  const transcriptData = transcriptRes.status === 'fulfilled' && transcriptRes.value.ok ? JSON.parse(transcriptRes.value.body) : null
-  const metadata = metadataRes.status === 'fulfilled' && metadataRes.value.ok ? JSON.parse(metadataRes.value.body) : null
+  const transcriptData = transcriptRes.status === 'fulfilled' ? transcriptRes.value : null
+  const metadata = metadataRes.status === 'fulfilled' ? metadataRes.value : null
 
   const rawText: string = transcriptData?.content ?? ''
   const text = rawText.length >= 100 ? rawText.replace(/\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim() : ''
@@ -42,7 +37,7 @@ async function getTikTokData(url: string) {
   const title: string = metadata?.title || description.slice(0, 80) || ''
   const creator: string = metadata?.author?.username || metadata?.author?.displayName || ''
 
-  return { title, creator, transcript: text, description, isTranscript: text.length > 0, _debug: debug }
+  return { title, creator, transcript: text, description, isTranscript: text.length > 0 }
 }
 
 function extractVideoId(url: string) {
@@ -97,7 +92,6 @@ export async function POST(req: NextRequest) {
   let creator = ''
   let transcript = ''
   let description = ''
-  let tiktokDebug: unknown
   if (platform === 'youtube') {
     const data = await getYouTubeData(url)
     title = data?.title ?? ''
@@ -112,12 +106,11 @@ export async function POST(req: NextRequest) {
     transcript = data?.transcript ?? ''
     description = data?.description ?? ''
     isTranscript = data?.isTranscript ?? false
-    tiktokDebug = data?._debug
   }
 
   const content = transcript || description
   if (!content && !title) {
-    return NextResponse.json({ error: 'Could not read this link', debugPlatform: platform, debugHasKey: !!process.env.SUPADATA_API_KEY, tiktokDebug }, { status: 422 })
+    return NextResponse.json({ error: 'Could not read this link' }, { status: 422 })
   }
 
   const contentSection = [
