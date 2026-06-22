@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const [row] = await res.json()
     return NextResponse.json({ id: row.id })
   } catch (e: any) {
-    return NextResponse.json({ error: e.message, cause: e.cause?.message ?? e.cause, hasUrl: !!SUPABASE_URL, hasKey: !!SUPABASE_KEY }, { status: 500 })
+    return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
 
